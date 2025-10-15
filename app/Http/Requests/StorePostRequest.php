@@ -22,7 +22,12 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'email' => 'string|email|max:255|unique:posts',
+            'bio' => 'string',
+            'main_title' => 'required|string|max:255',
+            'preferred_social_network' => 'nullable|string|max:255',
+            'preferred_social_network_username' => 'nullable|string|max:255',
         ];
     }
 }
