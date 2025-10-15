@@ -1,0 +1,70 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id integer [primary key]
+  username varchar
+  role varchar
+  created_at timestamp
+  deleted_at timestamp
+  deleted boolean
+}
+
+Table bibliographic_references {
+  id integer [primary key]
+  post_id integer [not null]
+  description varchar
+  created_at datetime
+  updated_at datetime
+  deleted boolean
+}
+
+Table footnotes {
+  id integer [primary key]
+  post_id integer [not null]
+  description varchar
+  created_at datetime
+  updated_at datetime
+  deleted boolean
+}
+
+
+Table authors {
+  id integer [primary key]
+  bio varchar
+  main_title varchar
+  preferred_social_network varchar
+  preferred_social_network_username varchar
+  created_at datetime
+  updated_at datetime
+  deleted boolean
+}
+
+Table posts {
+  id integer [primary key]
+  title varchar
+  tldr varchar
+  content text
+  image_path varchar
+  author_id integer [not null]
+  category_id integer
+  published_at datetime
+  status varchar
+  created_at datetime
+  updated_at datetime
+  deleted boolean
+}
+
+Table categories {
+  id integer [primary key]
+  name varchar
+  created_at datetime
+  updated_at datetime
+  deleted boolean
+}
+
+Ref author_posts: posts.author_id > authors.id // many-to-one
+Ref category_posts: posts.category_id > categories.id // many-to-one
+Ref bibliographic_ref_posts:  bibliographic_references.post_id > posts.id // many-to-one
+Ref footnotes_posts:  footnotes.post_id > posts.id // many-to-one
+
