@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('preferred_social_network')->nullable();
             $table->string('preferred_social_network_username')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
