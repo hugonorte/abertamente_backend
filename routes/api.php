@@ -3,7 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\CategoryController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -25,6 +25,7 @@ Route::group([
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::resource('author', AuthorController::class);
     Route::resource('category', CategoryController::class);
+    Route::resource('post', PostController::class);
     //Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
 });
