@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthorRequest;
 use App\Models\Author;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
@@ -86,7 +85,7 @@ class AuthorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Author $author)
+    public function destroy(Author $author): JsonResponse
     {
         $author->delete();
 

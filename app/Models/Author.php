@@ -11,6 +11,13 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * @property mixed $id
+ * @property mixed $name
+ * @property mixed $email
+ * @property mixed $bio
+ * @property mixed $main_title
+ * @property mixed $preferred_social_network
+ * @property mixed $preferred_social_network_username
+ * @method static findOrFail(string $id)
  */
 class Author extends Model
 {
