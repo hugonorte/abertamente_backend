@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PostController;
+use App\Models\BibliographicReference;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -26,6 +27,7 @@ Route::group([
     Route::resource('author', AuthorController::class);
     Route::resource('category', CategoryController::class);
     Route::resource('post', PostController::class);
+    Route::resource('bibliographic_reference', \App\Http\Controllers\BibliographicReferenceController::class);
     //Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
 });

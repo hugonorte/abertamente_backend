@@ -112,7 +112,6 @@ class PostControllerTest extends TestCase
         ]);
     }
 
-
     #[Test]
     public function deve_exibir_um_post_existente(): void
     {
@@ -174,7 +173,6 @@ class PostControllerTest extends TestCase
         ]);
     }
 
-
     #[Test]
     public function deve_retornar_404_se_post_para_update_nao_existir(): void
     {
@@ -218,7 +216,6 @@ class PostControllerTest extends TestCase
         $response->assertJsonValidationErrors(['title']);
     }
 
-
     #[Test]
     public function deve_excluir_um_post_existente(): void
     {
@@ -237,7 +234,6 @@ class PostControllerTest extends TestCase
             'id' => $post->id,
         ]);
     }
-
 
     #[Test]
     public function deve_retornar_404_se_post_para_delete_nao_existir(): void
