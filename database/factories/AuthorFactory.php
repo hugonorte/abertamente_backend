@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Author;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Author>
+ * @extends Factory<Author>
  */
 class AuthorFactory extends Factory
 {

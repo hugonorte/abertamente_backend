@@ -20,8 +20,9 @@ return new class extends Migration
             $table->foreignId('author_id')->constrained();
             $table->foreignId('category_id')->constrained();
             $table->dateTime('published_at');
-            $table->boolean('status')->nullable(false);
+            $table->string('status')->nullable(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

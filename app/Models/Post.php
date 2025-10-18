@@ -2,19 +2,35 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property mixed $title
+ * @property mixed $tldr
+ * @property mixed $content
+ * @property mixed $image_path
+ * @property mixed $author_id
+ * @property mixed $category_id
+ * @property mixed $published_at
+ * @property mixed $status
+ * @method static findOrFail(string $id)
+ */
 class Post extends Model
 {
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = ['name', 'email', 'bio', 'main_title', 'preferred_social_network', 'preferred_social_network_username'];
+    protected $fillable = ['title', 'email', 'bio', 'main_title', 'preferred_social_network', 'preferred_social_network_username'];
 
     use SoftDeletes;
 
