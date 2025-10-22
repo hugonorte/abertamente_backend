@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 /**
  * @property mixed $post_id
  * @property mixed $description
+ * @method static factory()
  * @method static findOrFail(string $id)
  */
 class BibliographicReference extends Model
