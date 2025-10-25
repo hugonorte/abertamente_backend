@@ -3,18 +3,43 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\UserRole;
 
 /**
  * @method static find(mixed $sub)
+ * @method static create(mixed $validatedData)
+ * @method static paginate(int $int)
+ * @property mixed $role
+ * @property mixed $first_name
+ * @property mixed $last_name
+ * @property mixed $email
+ * @property mixed $password
  */
 class User extends Authenticatable implements JWTSubject
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    use SoftDeletes;
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'role' => UserRole::class, // A mágica acontece aqui
+    ];
+
+
+
+    public function hasRole(UserRole $role): bool
+    {
+        return $this->role === $role;
+    }
 
     public function getJWTIdentifier()
     {
@@ -26,7 +51,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
         return [];
     }
@@ -37,9 +62,11 @@ class User extends Authenticatable implements JWTSubject
      * @var list<string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
+        'first_name',
+        'last_name',
+        'role',
     ];
 
     /**

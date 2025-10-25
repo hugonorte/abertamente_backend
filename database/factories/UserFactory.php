@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -25,9 +26,9 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => fake()->name(),
-            'last_name' => fake()->name(),
-            'role' => 1,
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'role' => UserRole::User->value,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
@@ -41,6 +42,29 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * 3. (RECOMENDADO) Adicionar um "state" para criar Admins facilmente.
+     * * Agora você pode fazer: User::factory()->admin()->create()
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Admin->value,
+        ]);
+    }
+
+    /**
+     * 4. (RECOMENDADO) Adicionar um "state" para criar Editors facilmente.
+     *
+     * Agora você pode fazer: User::factory()->editor()->create()
+     */
+    public function editor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Editor->value,
         ]);
     }
 }

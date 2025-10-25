@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Enums\UserRole;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,14 +15,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $seedUserRoleValue = env('SEED_USER_ROLE', UserRole::User->value);
+        $role = UserRole::tryFrom($seedUserRoleValue);
+        if (!$role) {
+            $role = UserRole::User;
+        }
+        $factory = User::factory();
 
-        User::factory()->create([
-            'first_name' => env('SEED_USER_FIRST_NAME'),
-            'last_name' => env('SEED_USER_LAST_NAME'),
-            'role' => env('SEED_USER_ROLE'),
-            'email' => env('SEED_USER_EMAIL'),
+        if ($role === UserRole::Admin) {
+            $factory = $factory->admin();
+        } elseif ($role === UserRole::Editor) {
+            $factory = $factory->editor();
+        }
+
+        $userData = [
+            'first_name' => env('SEED_USER_FIRST_NAME', 'Admin'),
+            'last_name' => env('SEED_USER_LAST_NAME', 'User'),
+            'email' => env('SEED_USER_EMAIL', 'admin@example.com'),
             'password' => env('SEED_USER_PASSWORD')
-        ]);
+        ];
+
+        $factory->create($userData);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\BibliographicReferenceController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FootnoteController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use App\Models\BibliographicReference;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,8 @@ Route::group([
     Route::resource('post', PostController::class);
     Route::resource('bibliographic_reference', BibliographicReferenceController::class);
     Route::resource('footnote', FootnoteController::class);
+    Route::resource('user', UserController::class);
+
     //Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
 });
@@ -43,5 +46,4 @@ Route::middleware('auth:api')->group(function () {
     //Route::post('/auth/refresh', [AuthController::class, 'refresh'])->name('refresh');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('me', 'AuthController@me');
-    Route::resource('users', UserController::class);
 });
