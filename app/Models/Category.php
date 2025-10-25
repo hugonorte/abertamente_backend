@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 /**
  * @property mixed $name
  * @method static findOrFail(string $id)
+ * @method first()
  */
 class Category extends Model
 {

@@ -15,6 +15,7 @@ use App\Enums\UserRole;
  * @method static find(mixed $sub)
  * @method static create(mixed $validatedData)
  * @method static paginate(int $int)
+ * @property mixed $id
  * @property mixed $role
  * @property mixed $first_name
  * @property mixed $last_name

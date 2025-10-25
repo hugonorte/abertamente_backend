@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Author;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -79,6 +78,7 @@ class AuthorControllerTest extends TestCase
     public function deve_listar_todos_os_autores(): void
     {
         // Arrange — cria 3 autores no banco
+        /** @var Author $author */
         $author = Author::factory()->count(3)->create();
 
         // Act — faz requisição GET para /api/autores
@@ -103,7 +103,7 @@ class AuthorControllerTest extends TestCase
         ]);
 
         // Act — faz a requisição GET para /api/author/{id}
-        $response = $this->getJson("/api/author/{$author->id}");
+        $response = $this->getJson("/api/author/$author->id");
 
         // Assert
         $response->assertStatus(200);
@@ -138,7 +138,7 @@ class AuthorControllerTest extends TestCase
         ];
 
         // Act — requisição PUT
-        $response = $this->putJson("/api/author/{$author->id}", $dadosAtualizados);
+        $response = $this->putJson("/api/author/$author->id", $dadosAtualizados);
 
         // Assert
         $response->assertStatus(200);
@@ -176,8 +176,8 @@ class AuthorControllerTest extends TestCase
     public function nao_deve_permitir_atualizar_para_email_duplicado(): void
     {
         // Dois usuários no banco
-        $user1 = Author::factory()->create(['email' => 'usuario1@example.com']);
-        $user2 = Author::factory()->create(['email' => 'usuario2@example.com']);
+        Author::factory()->create(['email' => 'usuario1@example.com']);
+        $author2 = Author::factory()->create(['email' => 'usuario2@example.com']);
 
         $dados = [
             'name' => 'Hugo Norte',
@@ -188,7 +188,7 @@ class AuthorControllerTest extends TestCase
             'preferred_social_network_username' => '@hugonorte',
         ];
 
-        $response = $this->putJson("/api/author/{$user2->id}", $dados);
+        $response = $this->putJson("/api/author/$author2->id", $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
@@ -201,7 +201,7 @@ class AuthorControllerTest extends TestCase
         $author = Author::factory()->create();
 
         // Act — requisição DELETE
-        $response = $this->deleteJson("/api/author/{$author->id}");
+        $response = $this->deleteJson("/api/author/$author->id");
 
         // Assert
         $response->assertStatus(200);

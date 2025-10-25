@@ -19,7 +19,9 @@ use Illuminate\Notifications\Notifiable;
  * @property mixed $category_id
  * @property mixed $published_at
  * @property mixed $status
+ * @property mixed $id
  * @method static findOrFail(string $id)
+ * @method first()
  */
 class Post extends Model
 {
