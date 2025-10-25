@@ -7,7 +7,6 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FootnoteController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
-use App\Models\BibliographicReference;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -19,6 +18,7 @@ Route::group([
     Route::post('refresh', 'AuthController@refresh');
     Route::post('me', 'AuthController@me');
 });
+
 //Route::resource('users', UserController::class);
 // ===================================================================
 // 🚪 Rota Públicas (Não exigem autenticação)
