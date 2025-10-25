@@ -7,6 +7,7 @@ enum UserRole: string
     case Admin = 'admin';
     case Editor = 'editor';
     case User = 'user';
+    case Author = 'author';
 
     /**
      * Retorna um rótulo legível para a role.
@@ -18,6 +19,7 @@ enum UserRole: string
             self::Admin => 'Administrador',
             self::Editor => 'Editor',
             self::User => 'Usuário',
+            self::Author => 'Autor',
         };
     }
 }

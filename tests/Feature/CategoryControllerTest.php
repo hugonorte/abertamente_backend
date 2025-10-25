@@ -63,7 +63,8 @@ class CategoryControllerTest extends TestCase
     public function deve_listar_todos_as_categorias(): void
     {
         // Arrange — cria 3 autores no banco
-        $categoria = category::factory()->count(3)->create();
+        /** @var Category $categoria */
+        $categoria = Category::factory()->count(3)->create();
 
         // Act — faz requisição GET para /api/autores
         $response = $this->getJson('/api/category');
@@ -88,7 +89,7 @@ class CategoryControllerTest extends TestCase
        ]);
 
        // Act — faz a requisição GET para /api/category/{id}
-       $response = $this->getJson("/api/category/{$categoria->id}");
+       $response = $this->getJson("/api/category/$categoria->id");
 
        // Assert
        $response->assertStatus(200);
@@ -123,7 +124,7 @@ class CategoryControllerTest extends TestCase
      ];
 
      // Act — requisição PUT
-     $response = $this->putJson("/api/category/{$categoria->id}", $dadosAtualizados);
+     $response = $this->putJson("/api/category/$categoria->id", $dadosAtualizados);
 
      // Assert
      $response->assertStatus(200);
@@ -155,14 +156,14 @@ class CategoryControllerTest extends TestCase
     public function nao_deve_permitir_atualizar_para_nome_duplicado(): void
     {
         // Dois usuários no banco
-        $user1 = category::factory()->create(['name' => 'Psicologia']);
-        $user2 = category::factory()->create(['name' => 'Medicina']);
+        Category::factory()->create(['name' => 'Psicologia']);
+        $category2 = Category::factory()->create(['name' => 'Medicina']);
 
         $dados = [
             'name' => 'Psicologia',
         ];
 
-        $response = $this->putJson("/api/category/{$user2->id}", $dados);
+        $response = $this->putJson("/api/category/$category2->id", $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['name']);
@@ -176,7 +177,7 @@ class CategoryControllerTest extends TestCase
         $categoria = category::factory()->create();
 
         // Act — requisição DELETE
-        $response = $this->deleteJson("/api/category/{$categoria->id}");
+        $response = $this->deleteJson("/api/category/$categoria->id");
 
         // Assert
         $response->assertStatus(200);

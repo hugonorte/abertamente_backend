@@ -18,6 +18,7 @@ use Illuminate\Notifications\Notifiable;
  * @property mixed $preferred_social_network
  * @property mixed $preferred_social_network_username
  * @method static findOrFail(string $id)
+ * @method first()
  */
 class Author extends Model
 {

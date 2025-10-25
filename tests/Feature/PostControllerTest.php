@@ -98,6 +98,7 @@ class PostControllerTest extends TestCase
     public function deve_listar_todos_os_posts(): void
     {
         // Arrange — cria 3 autores no banco
+        /** @var Post $post */
         $post = Post::factory()->count(3)->create();
 
         // Act — faz requisição GET para /api/posts
@@ -144,6 +145,7 @@ class PostControllerTest extends TestCase
     public function deve_atualizar_um_post_existente(): void
     {
         // Arrange — cria um usuário
+        /** @var Post $post */
         $post = Post::factory()->create([
             'title' => 'Teste de Título do Blog',
         ]);
@@ -196,7 +198,7 @@ class PostControllerTest extends TestCase
     public function nao_deve_permitir_atualizar_para_titulo_duplicado(): void
     {
         // Dois usuários no banco
-        $post1 = Post::factory()->create(['title' => 'Teste de Título do Blog']);
+        Post::factory()->create(['title' => 'Teste de Título do Blog']);
         $post2 = Post::factory()->create(['title' => 'Outro Teste de Título do Blog']);
 
         $dados = [

@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use App\Models\User;
@@ -110,7 +109,8 @@ class UserControllerTest extends TestCase
 
         // 3. Assert (Atualizado): Verifica o conteúdo usando o caminho completo
         //    Usar assertJsonPath é mais preciso que assertJsonFragment aqui.
-        $primeiroUsuario = $users->first();
+        /** @var User $primeiroUsuario */
+        $primeiroUsuario  = $users->first();
         $response->assertJsonPath('data.0.id', $primeiroUsuario->id);
         $response->assertJsonPath(
             'data.0.full_name',
@@ -129,7 +129,7 @@ class UserControllerTest extends TestCase
        ]);
 
        // Act — faz a requisição GET para /api/user/{id}
-       $response = $this->getJson("/api/user/{$user->id}");
+       $response = $this->getJson("/api/user/$user->id");
 
        // Assert
        $response->assertStatus(200);
@@ -165,7 +165,7 @@ class UserControllerTest extends TestCase
 
         // Act
         $response = $this->actingAs($adminUser)
-            ->putJson("/api/user/{$user->id}", $dadosAtualizados);
+            ->putJson("/api/user/$user->id", $dadosAtualizados);
 
         // Assert
         $response->assertStatus(200);
@@ -184,7 +184,7 @@ class UserControllerTest extends TestCase
     public function nao_deve_permitir_atualizar_para_email_duplicado(): void
     {
         // Dois usuários no banco
-        $user1 = User::factory()->create(['email' => 'usuario1@example.com']);
+        User::factory()->create(['email' => 'usuario1@example.com']);
         $user2 = User::factory()->create(['email' => 'usuario2@example.com']);
 
         $dados = [
@@ -193,7 +193,7 @@ class UserControllerTest extends TestCase
             'password' => 'senha123',
         ];
 
-        $response = $this->putJson("/api/user/{$user2->id}", $dados);
+        $response = $this->putJson("/api/user/$user2->id", $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
@@ -208,7 +208,7 @@ class UserControllerTest extends TestCase
 
         // Act
         $response = $this->actingAs($adminUser)
-            ->deleteJson("/api/user/{$userToDelete->id}");
+            ->deleteJson("/api/user/$userToDelete->id");
 
         // Assert
         $response->assertStatus(204);
@@ -231,7 +231,6 @@ class UserControllerTest extends TestCase
     {
         // Arrange
         $adminUser = User::factory()->admin()->create();
-        $userToDelete = User::factory()->create();
 
         // Act
         $response = $this->actingAs($adminUser)
@@ -242,7 +241,7 @@ class UserControllerTest extends TestCase
     }
 
     #[Test]
-    public function test_conexao_ao_seridor_local(): void
+    public function test_conexao_ao_servidor_local(): void
     {
         $response = $this->get('/');
 
