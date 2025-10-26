@@ -38,7 +38,7 @@ jobs:
           protocol: ftp
           port: 65002 # Porta SFTP padrão da Hostinger
 
-          # --- ATENÇÃO AQUI ---
+          # --- ATENÇÃO AQUI ----
           # O build do Nuxt 3 (npm run build) gera a pasta '.output/public'
           # Se você rodou 'npm run generate', a pasta pode ser 'dist'
           # Ajuste conforme o seu caso.
