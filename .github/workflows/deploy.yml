@@ -1,0 +1,66 @@
+# Nome do seu workflow. Aparecerá na aba "Actions" do GitHub.
+name: Deploy Frontend to Hostinger
+
+# --- GATILHO ---
+# Define quando este workflow deve rodar.
+on:
+  # Dispara o workflow em todo 'push' (envio de código)
+  push:
+    # Mas SOMENTE para a branch 'main'.
+    # Um merge de Pull Request é um 'push' para a 'main',
+    # então isso cobre exatamente o seu caso de uso.
+    branches:
+      - branch 17_github_action # ATENÇÃO: Mude para 'master' se for o nome da sua branch principal
+
+# --- TAREFAS (JOBS) ---
+# Define o que será executado.
+jobs:
+  build-and-deploy:
+    # O workflow rodará em um servidor virtual Ubuntu (padrão do GitHub)
+    runs-on: ubuntu-latest
+
+    # Passos que o servidor executará
+    steps:
+      # 1. Baixa o seu código do repositório para o servidor virtual
+      - name: 1. Baixar o código (Checkout)
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Node.js
+      - name: 2. Configurar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          # ATENÇÃO: Mude aqui para a versão do Node.js que seu projeto usa
+          node-version: '20'
+          cache: 'npm' # Habilita cache para 'npm install' ser mais rápido
+
+      # 3. Instala as dependências e gera os arquivos de build
+      - name: 3. Instalar dependências e Build
+        run: |
+          npm install
+          npm run build # ATENÇÃO: Mude se o seu comando de build for outro
+
+      # 4. Envia os arquivos para a Hostinger via SFTP
+      - name: 4. Fazer o deploy para a Hostinger via SFTP
+        # Usa uma "Action" popular e segura da comunidade para SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          # --- Configurações do SFTP ---
+          # 'secrets.*' são variáveis seguras que você configurará no GitHub
+          server: ${{ secrets.HOSTINGER_SFTP_HOST }}
+          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+          protocol: sftp
+          port: 65002 # Porta SFTP padrão da Hostinger
+
+          # --- Configurações dos Arquivos ---
+          # ATENÇÃO: Pasta LOCAL que foi gerada pelo 'npm run build'
+          # Mude de './dist/' para './build/' se o seu projeto gerar uma pasta 'build'
+          local-dir: ./dist/
+
+          # ATENÇÃO: Pasta REMOTA no seu servidor Hostinger
+          # 'public_html' é o padrão, mas pode ser 'public_html/nomedoprojeto'
+          remote-dir: public_html/
+
+          # Opção para limpar arquivos antigos no servidor antes de enviar os novos
+          # (use com cuidado!)
+          # cleanup: true
