@@ -13,8 +13,10 @@ class UserControllerTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function deve_criar_um_usuario_com_dados_validos(): void
+    public function deve_criar_um_usuario_com_dados_validos_quando_autenticado_como_admin(): void
     {
+        $adminUser = User::factory()->admin()->create();
+
         $dados = [
             'first_name' => 'Hugo',
             'last_name' => 'Norte',
@@ -23,7 +25,8 @@ class UserControllerTest extends TestCase
             'role' => UserRole::User->value,
         ];
 
-        $response = $this->postJson('/api/user', $dados);
+        $response = $this->actingAs($adminUser, 'api')
+            ->postJson('/api/user', $dados);
 
         $response->assertStatus(201);
 
@@ -32,24 +35,27 @@ class UserControllerTest extends TestCase
             'last_name' => 'Norte'
         ]);
 
-        $response->assertJsonFragment([
-            'first_name' => 'Hugo',
-            'last_name' => 'Norte'
-        ]);
+        $response->assertJsonPath('data.first_name', 'Hugo');
+        $response->assertJsonPath('data.last_name', 'Norte');
 
         // Senha não deve estar visível na resposta
-        $response->assertJsonMissing(['password' => 'senha123']);
+        $response->assertJsonMissing(['password']);
+        //    (Verifica especificamente dentro de 'data')
+        $response->assertJsonMissingPath('data.password');
     }
 
     #[Test]
     public function nao_deve_criar_usuario_com_dados_invalidos(): void
     {
+        $adminUser = User::factory()->admin()->create();
+
         $dados = [
             'first_name' => 'Hugo',
             'password' => '1234'
         ];
 
-        $response = $this->postJson('/api/user', $dados);
+        $response = $this->actingAs($adminUser, 'api')
+            ->postJson('/api/user', $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['password']);
@@ -58,17 +64,18 @@ class UserControllerTest extends TestCase
     #[Test]
     public function nao_deve_permitir_emails_duplicados(): void
     {
-        // Usuário inicial
-        User::factory()->create(['email' => 'duplicado@example.com']);
+        $adminUser = User::factory()->admin()->create(['email' => 'hugo@example.com']);
 
         $dados = [
-            'first_name' => 'Outro',
-            'last_name' => 'Usuário',
-            'email' => 'duplicado@example.com',
+            'first_name' => 'Hugo',
+            'last_name' => 'Norte',
+            'email' => 'hugo@example.com',
             'password' => 'senha123',
+            'role' => UserRole::User->value,
         ];
 
-        $response = $this->postJson('/api/user', $dados);
+        $response = $this->actingAs($adminUser, 'api')
+            ->postJson('/api/user', $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
@@ -78,10 +85,11 @@ class UserControllerTest extends TestCase
     public function deve_listar_todos_os_usuarios_com_paginacao_e_resource(): void
     {
         // Arrange — cria 3 usuários no banco
+        $adminUser = User::factory()->admin()->create(['email' => 'hugo@example.com']);
         $users = User::factory()->count(3)->create();
 
         // Act — faz requisição GET para /api/user
-        $response = $this->getJson('/api/user');
+        $response = $this->actingAs($adminUser, 'api')->getJson('/api/user');
 
         // Assert — valida o status
         $response->assertStatus(200);
@@ -105,15 +113,15 @@ class UserControllerTest extends TestCase
         ]);
 
         // 2. Assert (Novo): Verifica se há 3 itens DENTRO da chave 'data'
-        $response->assertJsonCount(3, 'data');
+        $response->assertJsonCount(4, 'data');
 
         // 3. Assert (Atualizado): Verifica o conteúdo usando o caminho completo
         //    Usar assertJsonPath é mais preciso que assertJsonFragment aqui.
         /** @var User $primeiroUsuario */
         $primeiroUsuario  = $users->first();
-        $response->assertJsonPath('data.0.id', $primeiroUsuario->id);
+        $response->assertJsonPath('data.1.id', $primeiroUsuario->id);
         $response->assertJsonPath(
-            'data.0.full_name',
+            'data.1.full_name',
             $primeiroUsuario->first_name . ' ' . $primeiroUsuario->last_name
         );
     }
@@ -122,6 +130,8 @@ class UserControllerTest extends TestCase
    public function deve_exibir_um_usuario_existente(): void
    {
        // Arrange — cria um usuário no banco
+       $adminUser = User::factory()->admin()->create(['email' => 'hugoadmin@example.com']);
+
        $user = User::factory()->create([
            'first_name' => 'Hugo',
            'last_name' => 'Norte',
@@ -129,7 +139,7 @@ class UserControllerTest extends TestCase
        ]);
 
        // Act — faz a requisição GET para /api/user/{id}
-       $response = $this->getJson("/api/user/$user->id");
+       $response = $this->actingAs($adminUser, 'api')->getJson("/api/user/$user->id");
 
        // Assert
        $response->assertStatus(200);
@@ -183,6 +193,7 @@ class UserControllerTest extends TestCase
     #[Test]
     public function nao_deve_permitir_atualizar_para_email_duplicado(): void
     {
+        $adminUser = User::factory()->admin()->create(['email' => 'hugo@example.com']);
         // Dois usuários no banco
         User::factory()->create(['email' => 'usuario1@example.com']);
         $user2 = User::factory()->create(['email' => 'usuario2@example.com']);
@@ -193,7 +204,8 @@ class UserControllerTest extends TestCase
             'password' => 'senha123',
         ];
 
-        $response = $this->putJson("/api/user/$user2->id", $dados);
+        $response = $this->actingAs($adminUser, 'api')
+            ->putJson("/api/user/$user2->id", $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);

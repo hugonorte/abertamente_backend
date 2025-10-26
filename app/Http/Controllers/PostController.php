@@ -31,7 +31,6 @@ class PostController extends Controller
      */
     public function store(PostRequest $request): JsonResponse
     {
-
         $post = new Post();
         $post->title = $request->get('title');
         $post->tldr = $request->get('tldr');

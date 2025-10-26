@@ -14,7 +14,37 @@ use App\Http\Resources\UserResource;
 class UserController extends Controller
 {
     /**
+     * Aplicar middleware de autorização via Policy no construtor.
+     * ESTA É A FORMA EXPLÍCITA E CORRETA NO LARAVEL 12.
+     */
+    public function __construct()
+    {
+        /**
+         * Isso mapeia manualmente os métodos da Policy para os métodos do Controller.
+         * 'can' refere-se ao middleware de autorização do Laravel.
+         *
+         * O parâmetro 'user' (minúsculo) refere-se ao parâmetro da rota: /api/user/{user}
+         */
+
+        // Mapeia a policy 'viewAny' (ver lista) para o método 'index'
+        $this->middleware('can:viewAny,' . User::class)->only('index');
+
+        // Mapeia a policy 'view' (ver um) para o método 'show'
+        $this->middleware('can:view,user')->only('show');
+
+        // Mapeia 'create' para 'store'
+        $this->middleware('can:create,' . User::class)->only('store');
+
+        // Mapeia 'update' para 'update'
+        $this->middleware('can:update,user')->only('update');
+
+        // Mapeia 'delete' para 'destroy'
+        $this->middleware('can:delete,user')->only('destroy');
+    }
+
+    /**
      * Display a listing of the resource.
+     *  (Protegido pelo método 'viewAny' da UserPolicy)
      */
     public function index(): JsonResource
     {
@@ -33,6 +63,7 @@ class UserController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *  (Protegido pelo método 'create' da UserPolicy)
      */
     public function store(UserRequest $request): JsonResponse
     {
@@ -53,6 +84,7 @@ class UserController extends Controller
 
     /**
      * Display the specified resource.
+     * (Protegido pelo método 'view' da UserPolicy)
      */
     public function show(User $user): UserResource
     {
@@ -69,6 +101,7 @@ class UserController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * (Protegido pelo método 'update' da UserPolicy)
      */
     public function update(UserRequest $request, User $user): UserResource
     {
@@ -88,6 +121,7 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * (Protegido pelo método 'delete' da UserPolicy)
      */
     public function destroy(User $user): JsonResponse
     {
