@@ -44,5 +44,5 @@ jobs:
           # Ajuste conforme o seu caso.
           local-dir: ./frontend/.output/public/ # Caminho padrão do Nuxt 3
           # local-dir: ./frontend/dist/ # Descomente se você gera uma pasta 'dist'
-
-          remote-dir: public_html/
+          server-dir: public_html/
+          timeout: 60000
