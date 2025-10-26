@@ -13,17 +13,22 @@ jobs:
       - name: 1. Baixar o código (Checkout)
         uses: actions/checkout@v4
 
+      # Adicionado 'working-directory' para o cache do npm funcionar no diretório correto
       - name: 2. Configurar o Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm' # Habilita cache para 'npm install' ser mais rápido
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json # Caminho para o lock file
 
+      # Adicionado 'working-directory' para rodar os comandos na pasta /frontend
       - name: 3. Instalar dependências e Build
+        working-directory: ./frontend
         run: |
           npm install
-          npm run build # ATENÇÃO: Mude se o seu comando de build for outro
+          npm run build # Se for Nuxt, este comando geralmente cria a pasta .output
 
+      # Alterado 'local-dir' para apontar para a pasta de build DENTRO de /frontend
       - name: 4. Fazer o deploy para a Hostinger via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -32,6 +37,12 @@ jobs:
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
           protocol: sftp
           port: 65002 # Porta SFTP padrão da Hostinger
-          local-dir: ./dist/
-          remote-dir: public_html/
 
+          # --- ATENÇÃO AQUI ---
+          # O build do Nuxt 3 (npm run build) gera a pasta '.output/public'
+          # Se você rodou 'npm run generate', a pasta pode ser 'dist'
+          # Ajuste conforme o seu caso.
+          local-dir: ./frontend/.output/public/ # Caminho padrão do Nuxt 3
+          # local-dir: ./frontend/dist/ # Descomente se você gera uma pasta 'dist'
+
+          remote-dir: public_html/
