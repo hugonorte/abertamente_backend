@@ -1,4 +1,4 @@
-name: Deploy Frontend via SSH (Hostinger)
+name: Deploy Laravel (API) e Nuxt (Frontend)
 
 on:
   push:
@@ -13,36 +13,53 @@ jobs:
       - name: 1. Baixar o código (Checkout)
         uses: actions/checkout@v4
 
-      - name: 2. Configurar o Node.js
+      - name: 2. Configurar o Node.js (para o build do Nuxt)
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      # Este passo é do seu YML anterior e é essencial
       - name: 3. Instalar dependências e Build (Nuxt)
         working-directory: ./frontend
         run: |
           npm install
-          npm run build
+          npm run build # Gera a pasta .output
 
-      # Este passo é do exemplo da Hostinger, adaptado
-      - name: 4. Copiar arquivos para Hostinger (via SFTP/SCP)
+      # --- ETAPA DE DEPLOY 1: O BACKEND LARAVEL ---
+      - name: 4. Copiar arquivos do Backend (Laravel) para public_html
         uses: appleboy/scp-action@v0.1.7
         with:
-          # ATENÇÃO: Os nomes dos secrets mudaram!
           host: ${{ secrets.HOSTINGER_SFTP_HOST }}
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
           port: 65002
 
-          # MUDANÇA: Aponta para o resultado do build do Nuxt
-          # O './.' no final copia o *conteúdo* da pasta, não a pasta em si.
+          # 'source' copterá TUDO, exceto o que o .gitignore padrão exclui
+          source: "."
+
+          # 'target' é a raiz do seu Laravel no servidor
+          target: "public_html"
+
+          # Esta flag é importante: apaga arquivos antigos do servidor
+          # que não existem mais no seu repositório.
+          rm: true
+
+      # --- ETAPA DE DEPLOY 2: O FRONTEND NUXT ---
+      - name: 5. Copiar arquivos do Frontend (Build Nuxt) para public_html/public
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_SFTP_HOST }}
+          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+          port: 65002
+
+          # 'source' é o resultado do build do Nuxt
           source: "./frontend/.output/public/."
 
-          # MUDANÇA: O destino no servidor
-          target: "public_html/"
+          # 'target' é a pasta pública do Laravel
+          target: "public_html/public"
 
-      # REMOVIDO: O passo 'Run composer install' foi removido
-      # pois ele é específico para projetos PHP/Laravel.
+          # 'rm: true' aqui garante que o 'index.php' antigo do Laravel
+          # seja apagado de 'public' e substituído pelo 'index.html' do Nuxt.
+          rm: true
