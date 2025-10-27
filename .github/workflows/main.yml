@@ -1,9 +1,9 @@
-name: Deploy Frontend to Hostinger
+name: Deploy Frontend via SSH (Hostinger)
 
 on:
   push:
     branches:
-      - 17_github_action # ATENÇÃO: Mude para 'master' se for o nome da sua branch principal
+      - 17_github_action # Ajuste se sua branch principal for outra (ex: main)
 
 jobs:
   deploy:
@@ -13,42 +13,36 @@ jobs:
       - name: 1. Baixar o código (Checkout)
         uses: actions/checkout@v4
 
-      # Adicionado 'working-directory' para o cache do npm funcionar no diretório correto
       - name: 2. Configurar o Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json # Caminho para o lock file
+          cache-dependency-path: frontend/package-lock.json
 
-      # Adicionado 'working-directory' para rodar os comandos na pasta /frontend
-      - name: 3. Instalar dependências e Build
+      # Este passo é do seu YML anterior e é essencial
+      - name: 3. Instalar dependências e Build (Nuxt)
         working-directory: ./frontend
         run: |
           npm install
-          npm run build # Se for Nuxt, este comando geralmente cria a pasta .output
+          npm run build
 
-      # Alterado 'local-dir' para apontar para a pasta de build DENTRO de /frontend
-      - name: 4. Fazer o deploy para a Hostinger via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      # Este passo é do exemplo da Hostinger, adaptado
+      - name: 4. Copiar arquivos para Hostinger (via SFTP/SCP)
+        uses: appleboy/scp-action@v0.1.7
         with:
+          # ATENÇÃO: Os nomes dos secrets mudaram!
+          host: ${{ secrets.HOSTINGER_SFTP_HOST }}
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
-          server: ${{ secrets.HOSTINGER_SFTP_HOST }}
-          port: 65002
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
-          local_path: './'
-          remote_path: '/public_html'
-          sftp_only: true
-          #username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
-          #server: ${{ secrets.HOSTINGER_SFTP_HOST }}
-          #password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
-          #port: 22 # Porta SFTP padrão da Hostinger
-          # --- ATENÇÃO AQUI ----
-          # O build do Nuxt 3 (npm run build) gera a pasta '.output/public'
-          # Se você rodou 'npm run generate', a pasta pode ser 'dist'
-          # Ajuste conforme o seu caso.
-          #local-dir: ./frontend/.output/public/ # Caminho padrão do Nuxt 3
-          # local-dir: ./frontend/dist/ # Descomente se você gera uma pasta 'dist'
-          #server-dir: public_html/
-          #timeout: 60000
-          ssh_private_key: ''
+          port: 65002
+
+          # MUDANÇA: Aponta para o resultado do build do Nuxt
+          # O './.' no final copia o *conteúdo* da pasta, não a pasta em si.
+          source: "./frontend/.output/public/."
+
+          # MUDANÇA: O destino no servidor
+          target: "public_html"
+
+      # REMOVIDO: O passo 'Run composer install' foi removido
+      # pois ele é específico para projetos PHP/Laravel.
