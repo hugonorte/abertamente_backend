@@ -42,7 +42,7 @@ jobs:
           source: "./frontend/.output/public/."
 
           # MUDANÇA: O destino no servidor
-          target: "public_html"
+          target: "public_html/"
 
       # REMOVIDO: O passo 'Run composer install' foi removido
       # pois ele é específico para projetos PHP/Laravel.
