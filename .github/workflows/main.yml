@@ -6,7 +6,7 @@ name: Deploy to Hostinger
 on:
   push:
     branches:
-      - main  # Altere 'main' para sua branch de produção, se for diferente (ex: 'master')
+      - 17_github_action  # Altere 'main' para sua branch de produção, se for diferente (ex: 'master')
 
 jobs:
   deploy:
@@ -44,4 +44,4 @@ jobs:
           # Isso evita que arquivos antigos que foram deletados no repo permaneçam no servidor
           rm: true
 
-          # [Recomendado] Lista de arquivos e pastas a serem ignorados na cópia
+
