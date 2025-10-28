@@ -1,69 +1,47 @@
-name: Deploy Laravel + Nuxt via SSH (Hostinger)
+# .github/workflows/deploy.yml
 
+name: Deploy to Hostinger
+
+# Define o gatilho: este workflow roda quando há um push na branch 'main'
 on:
   push:
     branches:
-      - 17_github_action # Ajuste se sua branch principal for outra (ex: main)
+      - main  # Altere 'main' para sua branch de produção, se for diferente (ex: 'master')
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    name: Deploy to public_html
+    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
 
     steps:
-      - name: 1. Baixar o código (Checkout)
+      # 1. Faz o checkout do código do seu repositório
+      - name: Checkout repository
         uses: actions/checkout@v4
-        # Baixa o repositório inteiro para o runner do GitHub
 
-      # REMOVIDO: Os passos de 'npm install' e 'npm run build' locais
-      # Eles não são necessários, pois faremos isso no servidor.
-
-      - name: 2. Copiar TUDO para Hostinger (via SFTP/SCP)
+      # 2. Envia os arquivos para o servidor Hostinger via SCP
+      - name: Deploy to Hostinger via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
+          # Endereço do host (IP ou domínio) do seu servidor Hostinger
           host: ${{ secrets.HOSTINGER_SFTP_HOST }}
+
+          # Nome de usuário para a conexão SSH
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+
+          # Senha para a conexão SSH (Veja a nota de segurança abaixo)
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+
+          # Porta SSH (Hostinger geralmente usa a 22, mas verifique no seu painel)
           port: 65002
 
-          # --- MUDANÇA PRINCIPAL ---
-          # 'source' agora é '.', que significa 'o repositório inteiro'.
-          # O './.' no final copia o *conteúdo* da pasta raiz.
-          source: "./."
+          # Diretório de origem ( '.' significa o repositório inteiro)
+          source: "."
 
-          # 'target' é a pasta 'public_html/'
-          target: "public_html/"
+          # Diretório de destino no servidor
+          target: "public_html"
 
-          # (Opcional) Adicionar 'rm: true' pode ser útil no futuro
-          # para apagar arquivos antigos no servidor que não existem mais no repo.
-          # rm: true
+          # [Recomendado] Limpa o diretório de destino antes de copiar os novos arquivos
+          # Isso evita que arquivos antigos que foram deletados no repo permaneçam no servidor
+          rm: true
 
-      - name: 3. Executar Comandos de Build no Servidor (via SSH)
-        # Este passo é crucial: ele instala as dependências no seu servidor
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOSTINGER_SFTP_HOST }}
-          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
-          port: 65002
-
-          # Comandos que serão executados na Hostinger
-          script: |
-            # Entra no diretório onde os arquivos foram copiados
-            cd public_html
-
-            echo "--- Instalando dependências do Laravel ---"
-            # (Verifique se 'composer' está disponível no seu plano Hostinger)
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-
-            # (Adicione outros comandos do Laravel aqui se precisar, ex: migrations)
-            # php artisan migrate --force
-
-            echo "--- Instalando dependências do Nuxt ---"
-            # Entra na pasta do frontend
-            cd frontend
-            npm install
-
-            echo "--- Buildando o frontend Nuxt ---"
-            npm run build
-
-            echo "--- Deploy concluído ---"
+          # [Recomendado] Lista de arquivos e pastas a serem ignorados na cópia
