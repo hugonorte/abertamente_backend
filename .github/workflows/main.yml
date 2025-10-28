@@ -1,47 +1,24 @@
-# .github/workflows/deploy.yml
-
 name: Deploy to Hostinger
-
-# Define o gatilho: este workflow roda quando há um push na branch 'main'
 on:
   push:
     branches:
       - 17_github_action  # Altere 'main' para sua branch de produção, se for diferente (ex: 'master')
-
 jobs:
   deploy:
     name: Deploy to public_html
     runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
-
     steps:
-      # 1. Faz o checkout do código do seu repositório
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # 2. Envia os arquivos para o servidor Hostinger via SCP
       - name: Deploy to Hostinger via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
-          # Endereço do host (IP ou domínio) do seu servidor Hostinger
           host: ${{ secrets.HOSTINGER_SFTP_HOST }}
-
-          # Nome de usuário para a conexão SSH
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
-
-          # Senha para a conexão SSH (Veja a nota de segurança abaixo)
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
-
-          # Porta SSH (Hostinger geralmente usa a 22, mas verifique no seu painel)
           port: 65002
-
-          # Diretório de origem ( '.' significa o repositório inteiro)
           source: "."
-
-          # Diretório de destino no servidor
-          target: "public_html"
-
-          # [Recomendado] Limpa o diretório de destino antes de copiar os novos arquivos
-          # Isso evita que arquivos antigos que foram deletados no repo permaneçam no servidor
+          target: "/home/u424791251/domains/admin.abertamente.net/public_html"
           rm: true
 
 
