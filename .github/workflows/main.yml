@@ -17,8 +17,8 @@ jobs:
           username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
           password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
           port: 65002
-          source: "."
+          source: ".app/,bootstrap/,config/.frontend/,database/,public/,resources/,routes/,storage/.tests/,artisan,composer.json,composer.lock,package.json"
           target: "/home/u424791251/domains/admin.abertamente.net/public_html"
-          rm: true
+          rm: false
 
 
