@@ -1,24 +1,44 @@
 name: Deploy to Hostinger
+
 on:
   push:
     branches:
-      - 17_github_action  # Altere 'main' para sua branch de produção, se for diferente (ex: 'master')
+      - 17_github_action
+
 jobs:
   deploy:
-    name: Deploy to public_html
-    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
+    name: Sync files to public_html
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Deploy to Hostinger via SCP
-        uses: appleboy/scp-action@v0.1.7
+
+      # Ação de deploy rsync ATUALIZADA
+      - name: Sync directories to Hostinger
+        uses: Burnett01/rsync-deployments@v6.0.0  # <--- Esta é a nova action
         with:
-          host: ${{ secrets.HOSTINGER_SFTP_HOST }}
-          username: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
-          port: 65002
-          source: ".app/,bootstrap/,config/.frontend/,database/,public/,resources/,routes/,storage/.tests/,artisan,composer.json,composer.lock,package.json"
-          target: "/home/u424791251/domains/admin.abertamente.net/public_html"
-          rm: false
+          # A flag '-rvz --delete' é o equivalente ao 'args' que você usava
+          # -r (recursivo), -v (verboso), -z (comprimir), --delete (apaga arquivos órfãos)
+          switches: -rvz --delete
 
+          # O caminho de origem (as pastas do seu projeto)
+          path: |
+            app/
+            bootstrap/
+            config/
+            database/
+            public/
+            routes/
+            composer.json
+            composer.lock
 
+          # Credenciais do servidor (use remote_key para Chave SSH, é mais seguro)
+          remote_host: ${{ secrets.HOSTINGER_SFTP_HOST }}
+          remote_user: ${{ secrets.HOSTINGER_SFTP_USERNAME }}
+          remote_key: ${{ secrets.HOSTINGER_SSH_KEY }} # <--- Recomendado
+          # remote_password: ${{ secrets.HOSTINGER_SFTP_PASSWORD }} # Use chave ou senha
+          remote_port: 65002
+
+          # O caminho de destino no servidor (estava correto)
+          remote_path: "/home/u424791251/domains/admin.abertamente.net/public_html"
