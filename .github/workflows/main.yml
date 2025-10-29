@@ -23,15 +23,7 @@ jobs:
           switches: -rvz --delete
 
           # O caminho de origem (as pastas do seu projeto)
-          path: |
-            app/
-            bootstrap/
-            config/
-            database/
-            public/
-            routes/
-            composer.json
-            composer.lock
+          path: "app/ bootstrap/ config/ database/ public/ routes/ composer.json composer.lock"
 
           # Credenciais do servidor (use remote_key para Chave SSH, é mais seguro)
           remote_host: ${{ secrets.HOSTINGER_SFTP_HOST }}
