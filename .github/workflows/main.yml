@@ -16,7 +16,7 @@ jobs:
 
       # Ação de deploy rsync ATUALIZADA
       - name: Sync directories to Hostinger
-        uses: Burnett01/rsync-deployments@v6.0.0  # <--- Esta é a nova action
+        uses: burnett01/rsync-deployments@7.0.2  # <--- Esta é a nova action
         with:
           # A flag '-rvz --delete' é o equivalente ao 'args' que você usava
           # -r (recursivo), -v (verboso), -z (comprimir), --delete (apaga arquivos órfãos)
