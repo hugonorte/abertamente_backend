@@ -26,24 +26,33 @@ class BibliographicReferenceRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Inicia a regra unique
+        $id = $this->route('bibliographic_reference');
+        $postId = $this->post_id;
+
+        // Se for uma atualização e o post_id não for enviado, buscamos o post_id atual do registro
+        // para garantir que a regra de unicidade continue vinculada ao post correto.
+        if (($this->isMethod('PUT') || $this->isMethod('PATCH')) && !$postId && $id) {
+            $reference = \App\Models\BibliographicReference::find($id);
+            $postId = $reference ? $reference->post_id : null;
+        }
+
+        // Inicia a regra unique vinculada ao post_id
         $uniqueRule = Rule::unique('bibliographic_references')
-            ->where('post_id', $this->post_id);
+            ->where('post_id', $postId);
 
         // Adiciona o 'ignore' APENAS se for um método de atualização (PUT ou PATCH)
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            // 'bibliographic_reference' deve ser o nome do parâmetro na sua rota
-            // Ex: /api/bibliographic_reference/{bibliographic_reference}
-            $uniqueRule->ignore($this->route('bibliographic_reference'));
+            $uniqueRule->ignore($id);
         }
 
         return [
-            'post_id' => 'required|integer|exists:posts,id',
+            'post_id' => 'sometimes|required|integer|exists:posts,id',
             'description' => [
+                'sometimes',
                 'required',
                 'string',
                 'min:10',
-                $uniqueRule // Adiciona a regra (com ou sem ignore)
+                $uniqueRule
             ],
         ];
     }
