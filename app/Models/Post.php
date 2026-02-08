@@ -32,7 +32,7 @@ class Post extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['title', 'email', 'bio', 'main_title', 'preferred_social_network', 'preferred_social_network_username'];
+    protected $fillable = ['title', 'author_id','category_id', 'tldr', 'content', 'image_path', 'published_at', 'status'];
 
     use SoftDeletes;
 
@@ -41,7 +41,7 @@ class Post extends Model
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Category::class);
     }
 
     /**
@@ -49,7 +49,7 @@ class Post extends Model
      */
     public function author(): BelongsTo
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Author::class);
     }
 
     /**
