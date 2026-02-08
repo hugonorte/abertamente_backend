@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('title')->nullable(false);
             $table->string('tldr');
-            $table->text('content')->nullable(false);
+            $table->longText('content')->nullable(false);
             $table->text('image_path')->nullable(false);
             $table->foreignId('author_id')->constrained();
             $table->foreignId('category_id')->constrained();
-            $table->dateTime('published_at');
-            $table->string('status')->nullable(false);
+            $table->dateTime('published_at')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
