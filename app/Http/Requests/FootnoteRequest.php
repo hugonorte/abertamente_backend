@@ -6,6 +6,9 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * @property mixed $post_id
+ */
 class FootnoteRequest extends FormRequest
 {
     /**
@@ -23,20 +26,31 @@ class FootnoteRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->route('footnote');
+        $postId = $this->post_id;
+
+        // Se for uma atualização e o post_id não for enviado, buscamos o post_id atual do registro
+        // para garantir que a regra de unicidade continue vinculada ao post correto.
+        if (($this->isMethod('PUT') || $this->isMethod('PATCH')) && !$postId && $id) {
+            $footnote = \App\Models\Footnote::find($id);
+            $postId = $footnote ? $footnote->post_id : null;
+        }
+
         // Inicia a regra unique
         $uniqueRule = Rule::unique('footnotes')
-            ->where('post_id', $this->post_id);
+            ->where('post_id', $postId);
 
         // Adiciona o 'ignore' APENAS se for um método de atualização (PUT ou PATCH)
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             // 'bibliographic_reference' deve ser o nome do parâmetro na sua rota
             // Ex: /api/bibliographic_reference/{bibliographic_reference}
-            $uniqueRule->ignore($this->route('footnote'));
+            $uniqueRule->ignore($id);
         }
 
         return [
-            'post_id' => 'required|integer|exists:posts,id',
+            'post_id' => 'sometimes|required|integer|exists:posts,id',
             'description' => [
+                'sometimes',
                 'required',
                 'string',
                 'min:10',
