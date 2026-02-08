@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BibliographicReferenceRequest;
 use App\Models\BibliographicReference;
+use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 
 class BibliographicReferenceController extends Controller
@@ -31,11 +32,9 @@ class BibliographicReferenceController extends Controller
      */
     public function store(BibliographicReferenceRequest $request): JsonResponse
     {
-        $bibliographicRef = new BibliographicReference();
-        $bibliographicRef->post_id = $request->get('post_id');
-        $bibliographicRef->description = $request->get('description');
+        $bibliographicRef = BibliographicReference::create($request->validated());
 
-        if($bibliographicRef->save()){
+        if($bibliographicRef){
             return response()->json($bibliographicRef, 201);
         }
 
@@ -65,10 +64,7 @@ class BibliographicReferenceController extends Controller
     {
         $bibliographicRef = BibliographicReference::findOrFail($id);
 
-        $bibliographicRef->update([
-            'post_id' => $request->get('post_id'),
-            'description' => $request->get('description'),
-        ]);
+        $bibliographicRef->update($request->validated());
 
         return response()->json($bibliographicRef);
     }
@@ -81,5 +77,12 @@ class BibliographicReferenceController extends Controller
         $bibliographicReference->delete();
 
         return response()->json(['message' => 'Referência bibliográfica excluída com sucesso']);
+    }
+
+    public function showByPostId(Post $post): JsonResponse
+    {
+        $bibliographicRef = BibliographicReference::where('post_id', $post->id)->get();
+
+        return response()->json($bibliographicRef);
     }
 }
