@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FootnoteRequest;
 use App\Models\BibliographicReference;
 use App\Models\Footnote;
+use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 
 class FootnoteController extends Controller
@@ -32,11 +33,9 @@ class FootnoteController extends Controller
      */
     public function store(FootnoteRequest $request): JsonResponse
     {
-        $footnote = new Footnote();
-        $footnote->post_id = $request->get('post_id');
-        $footnote->description = $request->get('description');
+        $footnote = Footnote::create($request->validated());
 
-        if($footnote->save()){
+        if($footnote){
             return response()->json($footnote, 201);
         }
 
@@ -66,10 +65,7 @@ class FootnoteController extends Controller
     {
         $footnote = Footnote::findOrFail($id);
 
-        $footnote->update([
-            'post_id' => $request->get('post_id'),
-            'description' => $request->get('description'),
-        ]);
+        $footnote->update($request->validated());
 
         return response()->json($footnote);
     }
@@ -82,5 +78,12 @@ class FootnoteController extends Controller
         $footnote->delete();
 
         return response()->json(['message' => 'Footnote excluído com sucesso']);
+    }
+
+    public function showByPostId(Post $post): JsonResponse
+    {
+        $footnotes = Footnote::where('post_id', $post->id)->get();
+
+        return response()->json($footnotes);
     }
 }
