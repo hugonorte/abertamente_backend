@@ -22,15 +22,17 @@ class PostRequest extends FormRequest
      */
     public function rules(): array
     {
+        $postId = $this->route('post');
+
         return [
-            'title' => ['required', 'string', 'max:128', 'min:3', 'unique:posts,title'],
+            'title' => ['required', 'string', 'max:128', 'min:3', 'unique:posts,title,' . $postId],
             'tldr' => ['nullable', 'string', 'max:255', 'min:3'],
             'content' => ['required', 'string'],
-            'image_path' => ['required', 'string'],
+            'image_path' => [$this->isMethod('post') ? 'required' : 'nullable', 'image', 'mimes:jpeg,jpg,png,avif,webp', 'max:2048'],
             'author_id' => ['required', 'integer'],
             'category_id' => ['required', 'integer'],
             'published_at' => ['nullable', 'date'],
-            'status' => ['required', 'string'],
+            'status' => ['required', 'string', 'in:draft,published,archived'],
         ];
     }
 }
