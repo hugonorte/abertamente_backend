@@ -18,6 +18,27 @@ class PostController extends Controller
         return response()->json($post);
     }
 
+    public function postSummary(): JsonResponse
+    {
+        $posts = Post::leftJoin('categories', 'posts.category_id', '=', 'categories.id')
+            ->leftJoin('authors', 'posts.author_id', '=', 'authors.id')
+            ->select(
+                'posts.id',
+                'posts.category_id',
+                'categories.name as category_name',
+                'posts.author_id',
+                'authors.name as author_name',
+                'posts.created_at',
+                'posts.updated_at',
+                'posts.status',
+                'posts.title'
+            )
+            ->get();
+
+        return response()->json($posts);
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -35,11 +56,20 @@ class PostController extends Controller
         $post->title = $request->get('title');
         $post->tldr = $request->get('tldr');
         $post->content = $request->get('content');
-        $post->image_path = $request->get('image_path');
         $post->author_id = $request->get('author_id');
         $post->category_id = $request->get('category_id');
         $post->published_at = $request->get('published_at');
         $post->status = $request->get('status');
+
+        if ($request->hasFile('image_path')) {
+                $file = $request->file('image_path');
+
+                $filename = time() . '_' . $file->getClientOriginalName();
+
+                $path = $file->storeAs('posts', $filename, 'public');
+
+                $post->image_path = $path;
+        }
 
         if($post->save()){
             return response()->json($post, 201);
@@ -70,17 +100,19 @@ class PostController extends Controller
     public function update(PostRequest $request, string $id): JsonResponse
     {
         $post = Post::findOrFail($id);
+        $data = $request->validated();
 
-        $post->update([
-            'title' => $request->get('title'),
-            'tldr' => $request->get('tldr'),
-            'content' => $request->get('content'),
-            'image_path' => $request->get('image_path'),
-            'author_id' => $request->get('author_id'),
-            'category_id' => $request->get('category_id'),
-            'published_at' => $request->get('published_at'),
-            'status' => $request->get('status'),
-        ]);
+        if ($request->hasFile('image_path')) {
+            $file = $request->file('image_path');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('posts', $filename, 'public');
+            $data['image_path'] = $path;
+        } else {
+            // Keep existing image if no new one is uploaded
+            unset($data['image_path']);
+        }
+
+        $post->update($data);
 
         return response()->json($post);
     }
