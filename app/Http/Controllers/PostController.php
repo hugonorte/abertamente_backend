@@ -38,6 +38,60 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
+    public function publishedPostContent($id): JsonResponse
+    {
+        $posts = Post::leftJoin('categories', 'posts.category_id', '=', 'categories.id')
+            ->leftJoin('authors', 'posts.author_id', '=', 'authors.id')
+            ->where('posts.status', '=', 'published')
+            ->where('posts.id', '=', $id)
+            ->select(
+                'posts.id',
+                'posts.category_id',
+                'categories.name as category_name',
+                'posts.author_id',
+                'authors.name as author_name',
+                'authors.main_title as author_main_title',
+                'authors.preferred_social_network as author_preferred_social_network',
+                'authors.preferred_social_network_username as author_preferred_social_network_username',
+                'authors.bio as author_bio',
+                'posts.created_at',
+                'posts.updated_at',
+                'posts.status',
+                'posts.title',
+                'posts.content',
+                'posts.tldr',
+                'posts.image_path',
+                'posts.published_at'
+            )
+            ->firstOrFail();
+
+        return response()->json($posts);
+    }
+
+    public function publishedPostList(): JsonResponse
+    {
+        $posts = Post::leftJoin('categories', 'posts.category_id', '=', 'categories.id')
+            ->leftJoin('authors', 'posts.author_id', '=', 'authors.id')
+            ->where('posts.status', '=', 'published')
+            ->select(
+                'posts.id',
+                'posts.category_id',
+                'categories.name as category_name',
+                'posts.author_id',
+                'authors.name as author_name',
+                'posts.created_at',
+                'posts.updated_at',
+                'posts.status',
+                'posts.title',
+                'posts.image_path',
+                'posts.published_at',
+                'posts.tldr'
+            )
+            ->get();
+
+        return response()->json($posts);
+    }
+
 
     /**
      * Show the form for creating a new resource.
