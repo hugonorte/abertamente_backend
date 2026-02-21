@@ -30,7 +30,9 @@ Route::group([
     Route::resource('author', AuthorController::class);
     Route::resource('category', CategoryController::class);
     Route::get('post-summary', [PostController::class, 'postSummary']);
-    Route::resource('post', PostController::class);
+    Route::get('post/published', [PostController::class, 'publishedPostList']);
+    Route::get('post/published/{id}', [PostController::class, 'publishedPostContent']);
+    Route::resource('post', PostController::class)->only(['index', 'show']);
     Route::resource('bibliographic_reference', BibliographicReferenceController::class);
     Route::get('bibliographic_reference/post/{post}', [BibliographicReferenceController::class, 'showByPostId']);
     Route::get('footnote/post/{post}', [FootnoteController::class, 'showByPostId']);
@@ -46,6 +48,7 @@ Route::group([
 // 🛡️ Rotas Protegidas (Exigem um token de autenticação válido)
 // ===================================================================
 Route::middleware('auth:api')->group(function () {
+    Route::resource('post', PostController::class)->except(['index', 'show']);
     //Route::post('/auth/refresh', [AuthController::class, 'refresh'])->name('refresh');
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
