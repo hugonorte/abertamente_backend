@@ -26,6 +26,7 @@ class PostRequest extends FormRequest
 
         return [
             'title' => ['required', 'string', 'max:128', 'min:3', 'unique:posts,title,' . $postId],
+            'slug' => ['required', 'string', 'max:255', 'min:3', 'unique:posts,slug,' . $postId],
             'tldr' => ['nullable', 'string', 'max:255', 'min:3'],
             'content' => ['required', 'string'],
             'image_path' => [$this->isMethod('post') ? 'required' : 'nullable', 'image', 'mimes:jpeg,jpg,png,avif,webp', 'max:2048'],
@@ -33,6 +34,19 @@ class PostRequest extends FormRequest
             'category_id' => ['required', 'integer'],
             'published_at' => ['nullable', 'date'],
             'status' => ['required', 'string', 'in:draft,published,archived'],
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'title.unique' => 'Já existe um post com este título. Por favor, escolha outro.',
+            'slug.unique' => 'Já existe um post com este slug (URL amigável). Por favor, altere o título ou o slug.',
         ];
     }
 }
