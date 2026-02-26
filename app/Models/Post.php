@@ -32,7 +32,7 @@ class Post extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['title', 'author_id','category_id', 'tldr', 'content', 'image_path', 'published_at', 'status'];
+    protected $fillable = ['title', 'slug', 'author_id','category_id', 'tldr', 'content', 'image_path', 'published_at', 'status'];
 
     use SoftDeletes;
 
