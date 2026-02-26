@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -92,7 +93,6 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -108,6 +108,7 @@ class PostController extends Controller
     {
         $post = new Post();
         $post->title = $request->get('title');
+        $post->slug = Str::of($request->get('title'))->slug('-');
         $post->tldr = $request->get('tldr');
         $post->content = $request->get('content');
         $post->author_id = $request->get('author_id');
