@@ -1,5 +1,18 @@
 <?php
 
+$developmentOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost',
+];
+
+$productionOrigins = [
+    "https://abertamente.net",
+    "https://painel.abertamente.net",
+];
+
+$allowedOrigins = env('APP_ENV') === 'production' ? $productionOrigins : $developmentOrigins;
+
 return [
 
     /*
@@ -19,7 +32,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000', 'http://localhost:3001', 'http://localhost'],
+    'allowed_origins' => $allowedOrigins,
 
     'allowed_origins_patterns' => [],
 
