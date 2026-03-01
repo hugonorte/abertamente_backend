@@ -67,4 +67,9 @@ class Post extends Model
     {
         return $this->hasMany(Footnote::class);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }
