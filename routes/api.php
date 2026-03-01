@@ -32,10 +32,11 @@ Route::group([
     Route::get('post-summary', [PostController::class, 'postSummary']);
     Route::get('post/published', [PostController::class, 'publishedPostList']);
     Route::get('post/published/{id}', [PostController::class, 'publishedPostContent']);
-    Route::resource('post', PostController::class)->only(['index', 'show']);
+    Route::get('/posts/{post}', [PostController::class, 'show']);
+    Route::resource('post', PostController::class)->only(['index']);
     Route::resource('bibliographic_reference', BibliographicReferenceController::class);
-    Route::get('bibliographic_reference/post/{post}', [BibliographicReferenceController::class, 'showByPostId']);
-    Route::get('footnote/post/{post}', [FootnoteController::class, 'showByPostId']);
+    Route::get('bibliographic_reference/post/{post:id}', [BibliographicReferenceController::class, 'showByPostId']);
+    Route::get('footnote/post/{post:id}', [FootnoteController::class, 'showByPostId']);
     Route::resource('footnote', FootnoteController::class);
     Route::resource('user', UserController::class);
 
