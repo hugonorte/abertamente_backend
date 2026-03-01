@@ -26,7 +26,7 @@ class PostRequest extends FormRequest
 
         return [
             'title' => ['required', 'string', 'max:128', 'min:3', 'unique:posts,title,' . $postId],
-            'slug' => ['required', 'string', 'max:255', 'min:3', 'unique:posts,slug,' . $postId],
+            'slug' => ['string', 'max:255', 'min:3', 'unique:posts,slug,' . $postId],
             'tldr' => ['nullable', 'string', 'max:255', 'min:3'],
             'content' => ['required', 'string'],
             'image_path' => [$this->isMethod('post') ? 'required' : 'nullable', 'image', 'mimes:jpeg,jpg,png,avif,webp', 'max:2048'],
