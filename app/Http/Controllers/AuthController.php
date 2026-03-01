@@ -160,8 +160,8 @@ class AuthController extends Controller
             config('jwt.refresh_ttl'), // TTL em minutos
             '/', // path
             null, // domain
-            false, // secure (HTTPS only)
-            false, // httpOnly
+            env('APP_ENV') === 'production' ? true : false, // secure (HTTPS only)
+            env('APP_ENV') === 'production' ? true : false, // httpOnly
             false, // raw
             'lax' // sameSite
         );
