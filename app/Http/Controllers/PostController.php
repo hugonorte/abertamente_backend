@@ -86,7 +86,8 @@ class PostController extends Controller
                 'posts.title',
                 'posts.image_path',
                 'posts.published_at',
-                'posts.tldr'
+                'posts.tldr',
+                'posts.slug',
             )
             ->get();
 
@@ -136,9 +137,9 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post): JsonResponse
+    public function show(Post $post): Post
     {
-        return response()->json($post);
+        return $post;
     }
 
     /**
