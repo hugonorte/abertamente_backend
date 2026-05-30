@@ -31,7 +31,7 @@ Route::group([
     Route::resource('category', CategoryController::class);
     Route::get('post-summary', [PostController::class, 'postSummary']);
     Route::get('post/published', [PostController::class, 'publishedPostList']);
-    Route::get('post/published/{id}', [PostController::class, 'publishedPostContent']);
+    Route::get('post/published/{post}', [PostController::class, 'publishedPostContent']);
     Route::get('/posts/{post}', [PostController::class, 'show']);
     Route::resource('post', PostController::class)->only(['index']);
     Route::resource('bibliographic_reference', BibliographicReferenceController::class);

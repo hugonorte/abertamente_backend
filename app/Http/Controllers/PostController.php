@@ -39,12 +39,12 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-    public function publishedPostContent($id): JsonResponse
+    public function publishedPostContent(Post $post): JsonResponse
     {
         $posts = Post::leftJoin('categories', 'posts.category_id', '=', 'categories.id')
             ->leftJoin('authors', 'posts.author_id', '=', 'authors.id')
             ->where('posts.status', '=', 'published')
-            ->where('posts.id', '=', $id)
+            ->where('posts.id', '=', $post->id)
             ->select(
                 'posts.id',
                 'posts.category_id',
