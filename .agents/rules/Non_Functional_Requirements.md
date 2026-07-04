@@ -1,0 +1,34 @@
+# Non-Functional Requirements
+
+- **Security**: 
+  - **Zero-Secret Policy**: No credentials, API tokens, or connection strings may be hardcoded or committed to version control. The `.env` file and `.env` containing secrets are strictly excluded via `.gitignore`.
+  - **Environment Variables**: All secrets must be injected via secure Environment Variables or a Secret Management service (e.g., Key Vault).
+  - **Data Privacy (PII)**: User data, including photos, identity numbers, and documents, must be handled with extreme care and stored in excluded directories/volumes to prevent accidental exposure.
+  - **Sanitization**: Automatic scrubbing of sensitive data in application logs.
+  - **Authentication**: JWT (JSON Web Token) with secure key rotation.
+  - **Authorization**: Strict RBAC (Role-Based Access Control) enforced at the API level.
+  - **Password Hashing**: Mandatory use of secure algorithms (e.g., BCrypt) for credential storage.
+- **Mandatory Development Standards**:
+  - **Asynchronous Execution**: All I/O-bound operations (Eloquent calls, File System, API requests) MUST be asynchronous using `Async/Await` and follow the `MethodNameAsync` naming convention. Blocking the thread with `.Result` or `.Wait()` is strictly prohibited.
+  - **Eloquent Performance**:
+    - Use `.toBase()` for all read-only queries.
+    - Explicitly use `.Include()` and `.ThenInclude()` for Eager Loading to prevent N+1 query patterns.
+    - No database queries inside loops (foreach/while).
+  - **Dependency Injection**: 
+    - All services and repositories MUST be injected via constructor. The `new` keyword for instantiating business services is prohibited.
+    - Follow appropriate lifecycles: `Scoped` for Eloquent Model and business services, `Singleton` only when stateless.
+  - **Naming & Clean Code**:
+    - PascalCase for Classes, Records, Properties, and Methods.
+    - camelCase for local variables and parameters.
+    - Private fields must be prefixed with `_` (e.g., `_context`).
+    - Adhere to SOLID principles and DRY (Don't Repeat Yourself).
+  - **Exception Handling**:
+    - No empty `catch {}` blocks.
+    - Use specific or custom exceptions instead of generic `Exception`.
+  - **Collections/Query Builder Strategy**: Use `.AnyAsync()` instead of `.CountAsync() > 0` for existence checks.
+- **Maintainability**: 
+  - **Test-Driven Development (TDD)**: Mandatory development model (Red-Green-Refactor cycle). Every new feature or bug fix must start with a failing test.
+  - **Integration Testing**: Mandatory premise. All developments must include integration tests to verify successful interaction with the database and external services.
+  - Comprehensive unit testing with XUnit and Mockery.
+- **Availability**: 
+  - Containerized deployment for consistent environments.

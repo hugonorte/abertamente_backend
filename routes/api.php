@@ -17,6 +17,14 @@ Route::group([
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
+
+    // Redefinição de senha
+    Route::post('forgot-password', [\App\Http\Controllers\PasswordResetController::class, 'forgotPassword'])
+        ->middleware('throttle:3,10')
+        ->name('password.email');
+        
+    Route::post('reset-password', [\App\Http\Controllers\PasswordResetController::class, 'resetPassword'])
+        ->name('password.update');
 });
 
 //Route::resource('users', UserController::class);
@@ -49,6 +57,7 @@ Route::group([
 // 🛡️ Rotas Protegidas (Exigem um token de autenticação válido)
 // ===================================================================
 Route::middleware('auth:api')->group(function () {
+    Route::get('roles', [UserController::class, 'roles']);
     Route::resource('post', PostController::class)->except(['index', 'show']);
     //Route::post('/auth/refresh', [AuthController::class, 'refresh'])->name('refresh');
     Route::post('refresh', [AuthController::class, 'refresh']);

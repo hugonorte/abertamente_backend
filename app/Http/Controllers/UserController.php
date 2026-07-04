@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Models\BibliographicReference;
 use App\Models\User;
+use App\Enums\UserRole;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -40,6 +41,21 @@ class UserController extends Controller
 
         // Mapeia 'delete' para 'destroy'
         $this->middleware('can:delete,user')->only('destroy');
+    }
+
+    /**
+     * Retorna todas as roles disponíveis.
+     */
+    public function roles(): JsonResponse
+    {
+        $roles = collect(UserRole::cases())->map(function ($role) {
+            return [
+                'value' => $role->value,
+                'label' => $role->label(),
+            ];
+        });
+
+        return response()->json($roles);
     }
 
     /**
