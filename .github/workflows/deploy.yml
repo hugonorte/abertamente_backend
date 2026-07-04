@@ -38,6 +38,7 @@ jobs:
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: ":memory:"
+        JWT_SECRET: "testing-secret-key-that-is-at-least-32-chars-long"
       run: php artisan test
       
     - name: Upload Artifact
