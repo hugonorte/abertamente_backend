@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Author;
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -25,11 +26,11 @@ class PostControllerTest extends TestCase
             'title' => 12,
             'tldr' => 'Ok',
             'content' => 'Teste de Conteúdo',
-            'image_path' => '/images/teste.jpg',
+            'image_path' => UploadedFile::fake()->image('teste.jpg'),
             'author_id' => $author->id,
             'category_id' => $categoria->id,
             'published_at' => '2001-01-01 00:00:00',
-            'status' => 'active',
+            'status' => 'published',
         ];
 
         $user = \App\Models\User::factory()->create();
@@ -51,11 +52,11 @@ class PostControllerTest extends TestCase
             'title' => 'Teste de Post',
             'tldr' => 'Teste de TLDR Ok',
             'content' => 'Teste de Conteúdo',
-            'image_path' => '/images/teste.jpg',
+            'image_path' => UploadedFile::fake()->image('teste.jpg'),
             'author_id' => $author->id,
             'category_id' => $categoria->id,
             'published_at' => '2001-01-01 00:00:00',
-            'status' => 'active',
+            'status' => 'published',
         ];
 
         $user = \App\Models\User::factory()->create();
@@ -83,11 +84,11 @@ class PostControllerTest extends TestCase
             'title' => 'Psicologia duplicado',
             'tldr' => 'Teste de TLDR Ok',
             'content' => 'Teste de Conteúdo',
-            'image_path' => '/images/teste.jpg',
+            'image_path' => UploadedFile::fake()->image('teste.jpg'),
             'author_id' => $author->id,
             'category_id' => $categoria->id,
             'published_at' => '2001-01-01 00:00:00',
-            'status' => 'active',
+            'status' => 'published',
         ];
 
         $user = \App\Models\User::factory()->create();
@@ -124,8 +125,8 @@ class PostControllerTest extends TestCase
             'title' => 'Teste de Título do Blog',
         ]);
 
-        // Act — faz a requisição GET para /api/category/{id}
-        $response = $this->getJson("/api/post/$post->id");
+        // Act
+        $response = $this->getJson("/api/posts/$post->slug");
 
         // Assert
         $response->assertStatus(200);
@@ -138,7 +139,7 @@ class PostControllerTest extends TestCase
     public function deve_retornar_404_se_post_nao_existir(): void
     {
         // Act — requisita um ID inexistente
-        $response = $this->getJson('/api/post/999');
+        $response = $this->getJson('/api/posts/invalido');
 
         // Assert
         $response->assertStatus(404);
@@ -156,11 +157,11 @@ class PostControllerTest extends TestCase
             'title' => 'Teste de Título do Blog atualizado',
             'tldr' => 'Teste de TLDR Ok',
             'content' => 'Teste de Conteúdo',
-            'image_path' => '/images/teste.jpg',
+            'image_path' => UploadedFile::fake()->image('teste.jpg'),
             'author_id' => $post->author_id,
             'category_id' => $post->category_id,
             'published_at' => '2001-01-01 00:00:00',
-            'status' => 'active',
+            'status' => 'published',
         ];
 
         // Act — requisição PUT
@@ -186,11 +187,11 @@ class PostControllerTest extends TestCase
             'title' => 'Teste de Título do Blog',
             'tldr' => 'Teste de TLDR Ok',
             'content' => 'Teste de Conteúdo',
-            'image_path' => '/images/teste.jpg',
+            'image_path' => UploadedFile::fake()->image('teste.jpg'),
             'author_id' => 1,
             'category_id' => 1,
             'published_at' => '2001-01-01 00:00:00',
-            'status' => 'active',
+            'status' => 'published',
         ];
 
         $user = \App\Models\User::factory()->create();
@@ -210,11 +211,11 @@ class PostControllerTest extends TestCase
             'title' => 'Teste de Título do Blog',
             'tldr' => 'Teste de TLDR Ok',
             'content' => 'Teste de Conteúdo',
-            'image_path' => '/images/teste.jpg',
+            'image_path' => UploadedFile::fake()->image('teste.jpg'),
             'author_id' => 1,
             'category_id' => 1,
             'published_at' => '2001-01-01 00:00:00',
-            'status' => 'active',
+            'status' => 'published',
         ];
 
         $user = \App\Models\User::factory()->create();
@@ -232,7 +233,7 @@ class PostControllerTest extends TestCase
 
         // Act — requisição DELETE
         $user = \App\Models\User::factory()->create();
-        $response = $this->actingAs($user)->deleteJson("/api/post/$post->id");
+        $response = $this->actingAs($user)->deleteJson("/api/post/$post->slug");
 
         // Assert
         $response->assertStatus(200);
@@ -249,7 +250,7 @@ class PostControllerTest extends TestCase
     {
         // Act — requisição DELETE para ID inexistente
         $user = \App\Models\User::factory()->create();
-        $response = $this->actingAs($user)->deleteJson('/api/post/9999');
+        $response = $this->actingAs($user)->deleteJson('/api/post/invalido');
 
         // Assert
         $response->assertStatus(404);
