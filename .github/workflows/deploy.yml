@@ -18,7 +18,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2' # Altere caso utilize outra versão no projeto
+        php-version: '8.3' # Atualizado para 8.3 para suportar as dependências do composer.lock
         extensions: mbstring, pdo, pdo_mysql, bcmath, xml, ctype, json, tokenizer, openssl
         coverage: none
         
