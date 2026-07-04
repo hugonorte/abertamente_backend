@@ -35,6 +35,9 @@ jobs:
       run: chmod -R 777 storage bootstrap/cache
       
     - name: Run Tests
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: :memory:
       run: php artisan test
       
     - name: Upload Artifact
