@@ -21,6 +21,7 @@ class PostFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence(),
+            'slug' => $this->faker->unique()->slug(),
             'tldr' => $this->faker->sentence(10),
             'content' => $this->faker->paragraphs(3, true),
             'image_path' => '/images/' . $this->faker->word() . '.jpg',

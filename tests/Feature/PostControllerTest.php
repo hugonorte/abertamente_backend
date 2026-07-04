@@ -32,7 +32,8 @@ class PostControllerTest extends TestCase
             'status' => 'active',
         ];
 
-        $response = $this->postJson('/api/post', $dados);
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->postJson('/api/post', $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['title']);
@@ -57,7 +58,8 @@ class PostControllerTest extends TestCase
             'status' => 'active',
         ];
 
-        $response = $this->postJson('/api/post', $dados);
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->postJson('/api/post', $dados);
 
         $response->assertStatus(201);
 
@@ -88,7 +90,8 @@ class PostControllerTest extends TestCase
             'status' => 'active',
         ];
 
-        $response = $this->postJson('/api/post', $dados);
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->postJson('/api/post', $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['title']);
@@ -161,7 +164,8 @@ class PostControllerTest extends TestCase
         ];
 
         // Act — requisição PUT
-        $response = $this->putJson("/api/post/$post->id", $dadosAtualizados);
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->putJson("/api/post/$post->id", $dadosAtualizados);
 
         // Assert
         $response->assertStatus(200);
@@ -189,7 +193,8 @@ class PostControllerTest extends TestCase
             'status' => 'active',
         ];
 
-        $response = $this->putJson('/api/post/999', $dados);
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->putJson('/api/post/999', $dados);
 
         $response->assertStatus(404);
     }
@@ -212,7 +217,8 @@ class PostControllerTest extends TestCase
             'status' => 'active',
         ];
 
-        $response = $this->putJson("/api/post/$post2->id", $dados);
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->putJson("/api/post/$post2->id", $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['title']);
@@ -225,7 +231,8 @@ class PostControllerTest extends TestCase
         $post = Post::factory()->create();
 
         // Act — requisição DELETE
-        $response = $this->deleteJson("/api/post/$post->id");
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->deleteJson("/api/post/$post->id");
 
         // Assert
         $response->assertStatus(200);
@@ -241,7 +248,8 @@ class PostControllerTest extends TestCase
     public function deve_retornar_404_se_post_para_delete_nao_existir(): void
     {
         // Act — requisição DELETE para ID inexistente
-        $response = $this->deleteJson('/api/post/9999');
+        $user = \App\Models\User::factory()->create();
+        $response = $this->actingAs($user)->deleteJson('/api/post/9999');
 
         // Assert
         $response->assertStatus(404);
