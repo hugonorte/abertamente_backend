@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend Application URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used to generate links back to the frontend application,
+    | such as password reset links or email verification links.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', env('APP_ENV') === 'production' ? 'https://painel.abertamente.net' : 'http://localhost:3000'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

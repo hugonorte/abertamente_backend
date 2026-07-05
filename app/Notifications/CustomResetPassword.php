@@ -15,10 +15,9 @@ class CustomResetPassword extends ResetPassword
      */
     public function toMail($notifiable)
     {
-        $defaultUrl = env('APP_ENV') === 'production' ? 'https://painel.abertamente.net' : 'http://localhost:3000';
-        $frontendUrl = env('FRONTEND_URL', $defaultUrl);
+        $frontendUrl = config('app.frontend_url', 'http://localhost:3000');
         
-        $url = $frontendUrl . '/redefinir-senha?token=' . $this->token . '&email=' . urlencode($notifiable->getEmailForPasswordReset());
+        $url = rtrim($frontendUrl, '/') . '/redefinir-senha?token=' . $this->token . '&email=' . urlencode($notifiable->getEmailForPasswordReset());
 
         return (new MailMessage)
             ->subject('Notificação de Redefinição de Senha')
