@@ -1,26 +1,21 @@
 # Developer Workflow & Environment
 
-### Docker Configuration
-The development environment is fully containerized using Docker Compose:
-- **Application Container**: `sandbox_app` (Laravel SDK 9.0).
-- **Database Container**: `sandbox_db` (MySQL 8.0).
-- **Orchestration**: Managed via `docker-compose.yml`, loading environment variables from a root `.env` file.
+### Docker Configuration (Laravel Sail)
+The development environment is fully containerized using Laravel Sail (Docker). **PHP is NOT installed on the host machine.**
 
-### Eloquent Migrations
-For agents to run migrations autonomously, they must be executed inside the `sandbox_app` container to avoid host-side permission issues and ensure correct database connectivity.
+**CRITICAL RULE FOR AGENTS:** 
+Whenever you need to run any Laravel/PHP command (such as running tests, migrations, or artisan commands), you MUST use Laravel Sail.
+❌ **INCORRECT:** `php artisan test`
+✅ **CORRECT:** `./vendor/bin/sail artisan test` (or `sail artisan test` se o alias estiver configurado)
 
-- **Tool Path**: `/root/.laravel/tools/laravel-ef` (Installed inside the container).
-- **Add Migration**:
-  ```bash
-  docker exec sandbox_app /root/.laravel/tools/php artisan make:migration <MigrationName> --project abertamente/
-  ```
-- **Update Database**:
-  ```bash
-  docker exec sandbox_app /root/.laravel/tools/php artisan migrate --project abertamente/
-  ```
+### Database & Migrations
+To run migrations or interact with the database, always use the Sail wrapper:
+- **Add Migration**: `./vendor/bin/sail artisan make:migration <MigrationName>`
+- **Update Database**: `./vendor/bin/sail artisan migrate`
+- **Run Tests**: `./vendor/bin/sail artisan test`
 
 ### Ports & Access
-- **API**: Accessible at `http://localhost:5271/swagger`.
+- **API**: Accessible via HTTP standard ports (check `.env` for specifics).
 - **MySQL**: Accessible at `localhost:3306`.
 
 ### Pull Request (PR) Code Review Workflow

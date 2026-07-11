@@ -126,7 +126,7 @@ class PostControllerTest extends TestCase
         ]);
 
         // Act
-        $response = $this->getJson("/api/posts/$post->slug");
+        $response = $this->getJson("/api/posts/$post->id");
 
         // Assert
         $response->assertStatus(200);
@@ -233,7 +233,7 @@ class PostControllerTest extends TestCase
 
         // Act — requisição DELETE
         $user = \App\Models\User::factory()->create();
-        $response = $this->actingAs($user)->deleteJson("/api/post/$post->slug");
+        $response = $this->actingAs($user)->deleteJson("/api/post/$post->id");
 
         // Assert
         $response->assertStatus(200);
@@ -254,5 +254,25 @@ class PostControllerTest extends TestCase
 
         // Assert
         $response->assertStatus(404);
+    }
+
+    #[Test]
+    public function deve_exibir_o_post_publicado_pelo_slug_para_o_frontend(): void
+    {
+        // Arrange
+        $post = Post::factory()->create([
+            'title' => 'Meu Novo Post Teste',
+            'slug' => 'meu-novo-post-teste',
+            'status' => 'published',
+        ]);
+
+        // Act
+        $response = $this->getJson("/api/post/published/{$post->slug}");
+
+        // Assert
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'title' => 'Meu Novo Post Teste',
+        ]);
     }
 }
