@@ -29,7 +29,7 @@ class PostRequest extends FormRequest
             'slug' => ['string', 'max:255', 'min:3', 'unique:posts,slug,' . $postId],
             'tldr' => ['nullable', 'string', 'max:255', 'min:3'],
             'content' => ['required', 'string'],
-            'image_path' => [$this->isMethod('post') ? 'required' : 'nullable', 'image', 'mimes:jpeg,jpg,png,avif,webp', 'max:2048'],
+            'image_path' => [$this->isMethod('post') ? 'required' : 'nullable', 'file', 'mimes:jpeg,jpg,png,avif,webp', 'max:2048'],
             'author_id' => ['required', 'integer'],
             'category_id' => ['required', 'integer'],
             'published_at' => ['nullable', 'date'],
