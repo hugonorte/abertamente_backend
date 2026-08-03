@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FootnoteController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GithubWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -47,6 +48,9 @@ Route::group([
     Route::get('footnote/post/{post:id}', [FootnoteController::class, 'showByPostId']);
     Route::resource('footnote', FootnoteController::class);
     Route::resource('user', UserController::class);
+
+    // Webhook for GitHub Actions
+    Route::post('/webhooks/github/deploy-status', [GithubWebhookController::class, 'handle']);
 
     //Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', [AuthController::class, 'logout']);

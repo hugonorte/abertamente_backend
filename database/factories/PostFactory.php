@@ -28,7 +28,7 @@ class PostFactory extends Factory
             'author_id' => Author::factory(),
             'category_id' => Category::factory(),
             'published_at' => $this->faker->dateTimeBetween('-1 years'),
-            'status' => $this->faker->randomElement(['active', 'inactive', 'draft']),
+            'status' => $this->faker->randomElement(['published', 'draft']),
         ];
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\PostStatus;
 
 /**
  * @property mixed $title
@@ -33,6 +34,10 @@ class Post extends Model
      * @var array<int, string>
      */
     protected $fillable = ['title', 'slug', 'author_id','category_id', 'tldr', 'content', 'image_path', 'published_at', 'status'];
+
+    protected $casts = [
+        'status' => PostStatus::class,
+    ];
 
     use SoftDeletes;
 

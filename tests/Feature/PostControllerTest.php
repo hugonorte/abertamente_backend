@@ -8,6 +8,8 @@ use App\Models\Post;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use App\Services\GithubDeploymentService;
+use Mockery;
 use Tests\TestCase;
 
 class PostControllerTest extends TestCase
@@ -58,6 +60,10 @@ class PostControllerTest extends TestCase
             'published_at' => '2001-01-01 00:00:00',
             'status' => 'published',
         ];
+
+        $mock = Mockery::mock(GithubDeploymentService::class);
+        $mock->shouldReceive('triggerFrontendDeployment')->once()->andReturn(true);
+        $this->instance(GithubDeploymentService::class, $mock);
 
         $user = \App\Models\User::factory()->create();
         $response = $this->actingAs($user)->postJson('/api/post', $dados);
@@ -152,6 +158,7 @@ class PostControllerTest extends TestCase
         /** @var Post $post */
         $post = Post::factory()->create([
             'title' => 'Teste de Título do Blog',
+            'status' => 'draft',
         ]);
         $dadosAtualizados = [
             'title' => 'Teste de Título do Blog atualizado',
@@ -163,6 +170,10 @@ class PostControllerTest extends TestCase
             'published_at' => '2001-01-01 00:00:00',
             'status' => 'published',
         ];
+
+        $mock = Mockery::mock(GithubDeploymentService::class);
+        $mock->shouldReceive('triggerFrontendDeployment')->once()->andReturn(true);
+        $this->instance(GithubDeploymentService::class, $mock);
 
         // Act — requisição PUT
         $user = \App\Models\User::factory()->create();

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PostStatus;
+use App\Services\GithubDeploymentService;
 use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
@@ -115,7 +117,15 @@ class PostController extends Controller
         $post->author_id = $request->get('author_id');
         $post->category_id = $request->get('category_id');
         $post->published_at = $request->get('published_at');
-        $post->status = $request->get('status');
+        $requestedStatus = $request->get('status');
+        $desiredStatus = $requestedStatus;
+        
+        if ($requestedStatus === 'published') {
+            $post->status = PostStatus::PUBLISHING;
+            $desiredStatus = 'published';
+        } else {
+            $post->status = PostStatus::tryFrom($requestedStatus) ?? PostStatus::DRAFT;
+        }
 
         if ($request->hasFile('image_path')) {
                 $file = $request->file('image_path');
@@ -128,6 +138,9 @@ class PostController extends Controller
         }
 
         if($post->save()){
+            if ($post->status === PostStatus::PUBLISHING) {
+                app(GithubDeploymentService::class)->triggerFrontendDeployment($post->id, $desiredStatus);
+            }
             return response()->json($post, 201);
         }
 
@@ -158,6 +171,23 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
         $data = $request->validated();
 
+        $requestedStatus = $data['status'] ?? null;
+        $originalStatus = $post->status;
+        $desiredStatus = null;
+        $needsDeployment = false;
+
+        if ($requestedStatus && $requestedStatus !== $originalStatus?->value) {
+            if ($requestedStatus === 'published') {
+                $data['status'] = PostStatus::PUBLISHING->value;
+                $desiredStatus = 'published';
+                $needsDeployment = true;
+            } elseif ($originalStatus === PostStatus::PUBLISHED || $originalStatus === PostStatus::ERROR) {
+                $data['status'] = PostStatus::UNPUBLISHING->value;
+                $desiredStatus = $requestedStatus;
+                $needsDeployment = true;
+            }
+        }
+
         if ($request->hasFile('image_path')) {
             $file = $request->file('image_path');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -169,6 +199,10 @@ class PostController extends Controller
         }
 
         $post->update($data);
+
+        if ($needsDeployment) {
+            app(GithubDeploymentService::class)->triggerFrontendDeployment($post->id, $desiredStatus);
+        }
 
         return response()->json($post);
     }
