@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'github' => [
+        'webhook_secret' => env('GITHUB_WEBHOOK_SECRET'),
+        'post_status_webhook_token' => env('POST_STATUS_WEBHOOK_GITHUB_TOKEN'),
+    ],
+
 ];

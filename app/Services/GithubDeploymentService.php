@@ -17,7 +17,7 @@ class GithubDeploymentService
      */
     public function triggerFrontendDeployment(int $postId, string $desiredStatus): bool
     {
-        $token = env('POST_STATUS_WEBHOOK_GITHUB_TOKEN');
+        $token = config('services.github.post_status_webhook_token');
         
         if (empty($token)) {
             Log::error('GitHub Deployment falhou: POST_STATUS_WEBHOOK_GITHUB_TOKEN não está definido.');
