@@ -45,7 +45,7 @@ class PostController extends Controller
     {
         $posts = Post::leftJoin('categories', 'posts.category_id', '=', 'categories.id')
             ->leftJoin('authors', 'posts.author_id', '=', 'authors.id')
-            ->where('posts.status', '=', 'published')
+            ->whereIn('posts.status', [PostStatus::PUBLISHED->value, PostStatus::PUBLISHING->value])
             ->where('posts.id', '=', $post->id)
             ->select(
                 'posts.id',
@@ -75,7 +75,7 @@ class PostController extends Controller
     {
         $posts = Post::leftJoin('categories', 'posts.category_id', '=', 'categories.id')
             ->leftJoin('authors', 'posts.author_id', '=', 'authors.id')
-            ->where('posts.status', '=', 'published')
+            ->whereIn('posts.status', [PostStatus::PUBLISHED->value, PostStatus::PUBLISHING->value])
             ->select(
                 'posts.id',
                 'posts.category_id',
