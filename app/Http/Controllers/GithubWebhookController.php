@@ -28,12 +28,17 @@ class GithubWebhookController extends Controller
         }
 
         $validated = $request->validate([
-            'post_id' => 'required|integer|exists:posts,id',
+            'post_id' => 'required|integer',
             'build_status' => 'required|string|in:success,error',
             'desired_status' => 'required|string', // ex: 'published', 'unpublished', etc.
         ]);
 
-        $post = Post::findOrFail($validated['post_id']);
+        $post = Post::withTrashed()->findOrFail($validated['post_id']);
+
+        if ($post->trashed()) {
+            Log::info("Webhook recebido: O Post ID {$post->id} já está deletado. Nenhuma atualização de status necessária.");
+            return response()->json(['message' => 'Post deletado, nenhuma atualização necessária', 'post' => $post]);
+        }
 
         if ($validated['build_status'] === 'success') {
             $post->status = PostStatus::tryFrom($validated['desired_status']) ?? PostStatus::ERROR;

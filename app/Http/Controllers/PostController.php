@@ -212,7 +212,14 @@ class PostController extends Controller
      */
     public function destroy(Post $post): JsonResponse
     {
+        $needsDeployment = in_array($post->status?->value, [PostStatus::PUBLISHED->value, PostStatus::PUBLISHING->value]);
+        $postId = $post->id;
+
         $post->delete();
+
+        if ($needsDeployment) {
+            app(GithubDeploymentService::class)->triggerFrontendDeployment($postId, 'deleted');
+        }
 
         return response()->json(['message' => 'Post excluído com sucesso']);
     }
