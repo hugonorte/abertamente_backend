@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Enums\PostStatus;
 
 class PostRequest extends FormRequest
 {
@@ -33,7 +35,7 @@ class PostRequest extends FormRequest
             'author_id' => ['required', 'integer'],
             'category_id' => ['required', 'integer'],
             'published_at' => ['nullable', 'date'],
-            'status' => ['required', 'string', 'in:draft,published,archived'],
+            'status' => ['required', 'string', Rule::enum(PostStatus::class)],
         ];
     }
 
