@@ -181,7 +181,7 @@ class PostController extends Controller
                 $data['status'] = PostStatus::PUBLISHING->value;
                 $desiredStatus = 'published';
                 $needsDeployment = true;
-            } elseif ($originalStatus === PostStatus::PUBLISHED || $originalStatus === PostStatus::ERROR) {
+            } elseif (in_array($originalStatus, [PostStatus::PUBLISHED, PostStatus::ERROR, PostStatus::PUBLISHING, PostStatus::UNPUBLISHING])) {
                 $data['status'] = PostStatus::UNPUBLISHING->value;
                 $desiredStatus = $requestedStatus;
                 $needsDeployment = true;
