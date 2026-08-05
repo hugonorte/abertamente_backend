@@ -206,12 +206,12 @@ class PostController extends Controller
         $desiredStatus = null;
         $needsDeployment = false;
 
-        if ($requestedStatus && $requestedStatus !== $originalStatus?->value) {
-            if ($requestedStatus === 'published') {
-                $data['status'] = PostStatus::PUBLISHING->value;
-                $desiredStatus = 'published';
-                $needsDeployment = true;
-            } elseif (in_array($originalStatus, [PostStatus::PUBLISHED, PostStatus::ERROR, PostStatus::PUBLISHING, PostStatus::UNPUBLISHING])) {
+        if ($requestedStatus === 'published') {
+            $data['status'] = PostStatus::PUBLISHING->value;
+            $desiredStatus = 'published';
+            $needsDeployment = true;
+        } elseif ($requestedStatus && $requestedStatus !== $originalStatus?->value) {
+            if (in_array($originalStatus, [PostStatus::PUBLISHED, PostStatus::ERROR, PostStatus::PUBLISHING, PostStatus::UNPUBLISHING])) {
                 $data['status'] = PostStatus::UNPUBLISHING->value;
                 $desiredStatus = $requestedStatus;
                 $needsDeployment = true;
