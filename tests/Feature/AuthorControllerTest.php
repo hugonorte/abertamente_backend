@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\Author;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -19,7 +21,8 @@ class AuthorControllerTest extends TestCase
             'password' => '123456'
         ];
 
-        $response = $this->postJson('/api/author', $dados);
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->postJson('/api/author', $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
@@ -37,7 +40,8 @@ class AuthorControllerTest extends TestCase
             'preferred_social_network_username' => '@hugonorte',
         ];
 
-        $response = $this->postJson('/api/author', $dados);
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->postJson('/api/author', $dados);
 
         $response->assertStatus(201);
 
@@ -68,7 +72,8 @@ class AuthorControllerTest extends TestCase
             'preferred_social_network_username' => '@hugonorte',
         ];
 
-        $response = $this->postJson('/api/author', $dados);
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->postJson('/api/author', $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
@@ -138,7 +143,8 @@ class AuthorControllerTest extends TestCase
         ];
 
         // Act — requisição PUT
-        $response = $this->putJson("/api/author/$author->id", $dadosAtualizados);
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->putJson("/api/author/$author->id", $dadosAtualizados);
 
         // Assert
         $response->assertStatus(200);
@@ -167,7 +173,8 @@ class AuthorControllerTest extends TestCase
             'preferred_social_network_username' => '@teste',
         ];
 
-        $response = $this->putJson('/api/author/999', $dados);
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->putJson('/api/author/999', $dados);
 
         $response->assertStatus(404);
     }
@@ -188,7 +195,8 @@ class AuthorControllerTest extends TestCase
             'preferred_social_network_username' => '@hugonorte',
         ];
 
-        $response = $this->putJson("/api/author/$author2->id", $dados);
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->putJson("/api/author/$author2->id", $dados);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
@@ -201,7 +209,8 @@ class AuthorControllerTest extends TestCase
         $author = Author::factory()->create();
 
         // Act — requisição DELETE
-        $response = $this->deleteJson("/api/author/$author->id");
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->deleteJson("/api/author/$author->id");
 
         // Assert
         $response->assertStatus(200);
@@ -217,7 +226,8 @@ class AuthorControllerTest extends TestCase
     public function deve_retornar_404_se_usuario_para_delete_nao_existir(): void
     {
         // Act — requisição DELETE para ID inexistente
-        $response = $this->deleteJson('/api/author/9999');
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $response = $this->actingAs($admin, 'api')->deleteJson('/api/author/9999');
 
         // Assert
         $response->assertStatus(404);

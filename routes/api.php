@@ -36,7 +36,7 @@ Route::group([
     'middleware' => 'api',
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::resource('author', AuthorController::class);
+    Route::apiResource('author', AuthorController::class)->only(['index', 'show']);
     Route::resource('category', CategoryController::class);
     Route::get('post-summary', [PostController::class, 'postSummary']);
     Route::get('post/published', [PostController::class, 'publishedPostList']);
@@ -64,6 +64,7 @@ Route::group([
 Route::middleware('auth:api')->group(function () {
     Route::get('roles', [UserController::class, 'roles']);
     Route::resource('post', PostController::class)->except(['index', 'show']);
+    Route::apiResource('author', AuthorController::class)->except(['index', 'show']);
     //Route::post('/auth/refresh', [AuthController::class, 'refresh'])->name('refresh');
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);

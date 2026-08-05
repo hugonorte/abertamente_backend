@@ -103,4 +103,12 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the author profile associated with the user.
+     */
+    public function author()
+    {
+        return $this->hasOne(Author::class);
+    }
 }

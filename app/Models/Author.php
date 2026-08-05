@@ -27,7 +27,7 @@ class Author extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['name', 'email', 'bio', 'main_title', 'preferred_social_network', 'preferred_social_network_username'];
+    protected $fillable = ['user_id', 'name', 'email', 'bio', 'main_title', 'preferred_social_network', 'preferred_social_network_username'];
 
     use SoftDeletes;
 
@@ -40,5 +40,13 @@ class Author extends Model
     public function post(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get the user that owns the author profile.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

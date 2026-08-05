@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthorRequest;
 use App\Models\Author;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class AuthorController extends Controller
 {
@@ -39,6 +40,10 @@ class AuthorController extends Controller
         $author->preferred_social_network = $request->get('preferred_social_network');
         $author->preferred_social_network_username = $request->get('preferred_social_network_username');
 
+        if (auth()->check()) {
+            $author->user_id = auth()->id();
+        }
+
         if($author->save()){
             return response()->json($author, 201);
         }
@@ -69,6 +74,8 @@ class AuthorController extends Controller
     public function update(AuthorRequest $request, string $id): JsonResponse
     {
         $author = Author::findOrFail($id);
+        
+        Gate::authorize('update', $author);
 
         $author->update([
             'name' => $request->get('name'),
@@ -87,6 +94,8 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author): JsonResponse
     {
+        Gate::authorize('delete', $author);
+        
         $author->delete();
 
         return response()->json(['message' => 'Usuário excluído com sucesso']);

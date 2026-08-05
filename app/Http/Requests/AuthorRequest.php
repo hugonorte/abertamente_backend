@@ -28,7 +28,7 @@ class AuthorRequest extends FormRequest
         return [
             //['name', 'email', 'bio', 'main_title', 'preferred_social_network', 'preferred_social_network_username'];
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:authors,email',
+            'email' => 'required|string|email|max:255|unique:authors,email,' . $this->route('author'),
             'bio' => 'nullable|string',
             'main_title' => 'nullable|string|max:255',
             'preferred_social_network' => 'nullable|string|max:255',
