@@ -6,7 +6,7 @@ use App\Models\Author;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use PHPUnit\Framework\Attributes\Test;
 use App\Services\GithubDeploymentService;
 use Mockery;
@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class PostControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTruncation;
 
     #[Test]
     public function nao_deve_criar_post_com_dados_invalidos(): void
@@ -285,5 +285,41 @@ class PostControllerTest extends TestCase
         $response->assertJsonFragment([
             'title' => 'Meu Novo Post Teste',
         ]);
+    }
+
+    #[Test]
+    public function deve_buscar_posts_por_termo_de_pesquisa(): void
+    {
+        // Arrange
+        $post = Post::factory()->create([
+            'title' => 'Como aprender Laravel',
+            'tldr' => 'Dicas essenciais para iniciar no Laravel',
+            'content' => 'Conteúdo detalhado sobre Laravel e TDD',
+            'status' => 'published'
+        ]);
+
+        $post2 = Post::factory()->create([
+            'title' => 'Introdução ao React',
+            'tldr' => 'Conceitos básicos de React',
+            'content' => 'Vamos aprender os hooks do React',
+            'status' => 'published'
+        ]);
+
+        $post3 = Post::factory()->create([
+            'title' => 'Guia Laravel Avançado',
+            'tldr' => 'Para especialistas',
+            'content' => 'Mais sobre o framework PHP',
+            'status' => 'draft' // não deve ser retornado
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/post/search?q=Laravel');
+
+        // Assert
+        $response->assertStatus(200);
+
+        $response->assertJsonFragment(['title' => 'Como aprender Laravel']);
+        $response->assertJsonMissing(['title' => 'Introdução ao React']);
+        $response->assertJsonMissing(['title' => 'Guia Laravel Avançado']);
     }
 }

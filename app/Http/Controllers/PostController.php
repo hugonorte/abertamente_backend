@@ -96,6 +96,36 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
+    public function search(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $searchTerm = $request->query('q');
+
+        $posts = Post::leftJoin('categories', 'posts.category_id', '=', 'categories.id')
+            ->leftJoin('authors', 'posts.author_id', '=', 'authors.id')
+            ->whereIn('posts.status', [PostStatus::PUBLISHED->value, PostStatus::PUBLISHING->value])
+            ->when($searchTerm, function ($query, $searchTerm) {
+                return $query->whereFullText(['posts.title', 'posts.tldr', 'posts.content'], $searchTerm);
+            })
+            ->select(
+                'posts.id',
+                'posts.category_id',
+                'categories.name as category_name',
+                'posts.author_id',
+                'authors.name as author_name',
+                'posts.created_at',
+                'posts.updated_at',
+                'posts.status',
+                'posts.title',
+                'posts.image_path',
+                'posts.published_at',
+                'posts.tldr',
+                'posts.slug',
+            )
+            ->paginate($request->query('limit', 10));
+
+        return response()->json($posts);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

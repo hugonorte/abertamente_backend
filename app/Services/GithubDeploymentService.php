@@ -17,6 +17,14 @@ class GithubDeploymentService
      */
     public function triggerFrontendDeployment(int $postId, string $desiredStatus): bool
     {
+        if (!app()->environment('production')) {
+            Log::info('GitHub Deployment ignorado: a automação está configurada para rodar apenas em ambiente de produção.', [
+                'post_id' => $postId,
+                'desired_status' => $desiredStatus
+            ]);
+            return true;
+        }
+
         $token = config('services.github.post_status_webhook_token');
         
         if (empty($token)) {
