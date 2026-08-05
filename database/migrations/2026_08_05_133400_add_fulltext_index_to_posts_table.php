@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,9 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->fullText(['title', 'tldr', 'content']);
-        });
+        if (DB::connection()->getDriverName() !== 'sqlite') {
+            Schema::table('posts', function (Blueprint $table) {
+                $table->fullText(['title', 'tldr', 'content']);
+            });
+        }
     }
 
     /**
@@ -21,8 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->dropFullText(['title', 'tldr', 'content']);
-        });
+        if (DB::connection()->getDriverName() !== 'sqlite') {
+            Schema::table('posts', function (Blueprint $table) {
+                $table->dropFullText(['title', 'tldr', 'content']);
+            });
+        }
     }
 };
